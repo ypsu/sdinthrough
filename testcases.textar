@@ -1,0 +1,4055 @@
+== unescape.SingleWord
+"hello"
+== unescape.TwoWords
+"hello world"
+== unescape.SingleTab
+"hello\tworld"
+== unescape.Newline1
+"line 1\nline 2\nline 3"
+== unescape.Newline2
+"line 1\nline 2\nline 3\n"
+== unescape.Newline3
+"line 1\nline 2\nline 3\n\n"
+== unescape.SingleBackslash
+"backslash: '\\'"
+== unescape.TwoBackslashes
+"'\\\\'"
+== unescape.ThreeBackslashes
+"'\\\\\\'"
+== unescape.SingleQuote
+"quote: '\"'"
+== unescape.BackslashQuote
+"backslash+quote: '\\\"'"
+== unescape.BackslashAtEnd
+"\\"
+== unescape.QuoteAtEnd
+"\""
+== unescape.HexBytes1
+"1\x0a2\x0a3\x0a"
+== unescape.HexBytes2
+"1\x0a2\x093\x0A"
+== unescape.OctalBytes
+"\150\x65\154\x6C\x6f"
+== unescape.NotOctalByte
+"\\123"
+== unescape.NotHexByte
+"\\x0a"
+== unescape.BothHexAndOctal
+"\x73\144\151\x6E\n"
+== unescape.BackslashedOctalByte
+"\\\123"
+== unescape.EmptyString
+""
+== unescape.Error
+Error out if the input is not surrounded by double quotes.
+Report an error by printing ERROR on the first line of output.
+You can optionally add a detailed error message.
+The error message doesn't have to match the one in want.result.
+== unescape.BadQuotes
+'hello'
+== unescape.EmptyInput
+
+== unescape.SingleLineMissingQuotes
+123
+== unescape.Unterminated1
+"hello
+== unescape.Unterminated2
+"\"
+== unescape.InvalidOctalByte1
+"1\0"
+== unescape.InvalidOctalByte2
+"1\01"
+== unescape.InvalidOctalByte3
+"1\019"
+== unescape.InvalidOctalByte4
+"1\400"
+== unescape.InvalidOctalByte5
+"1\01
+== unescape.InvalidHexByte1
+"1\x"
+== unescape.InvalidHexByte2
+"1\x0g"
+== unescape.InvalidHexByte3
+"1\xG0"
+== unescape.InvalidHexByte4
+"1\x a"
+== unescape.InvalidEscapeSequence
+"1\#"
+== unescape.UnclosedString
+"
+== unescape.TwoStrings
+""""
+== unescape.GoProgram
+"package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello world!\")\n}\n"
+== tokenize.ThreeTokens
+Three Bare Tokens
+== tokenize.ManySpaces
+  Three    Bare      Tokens
+== tokenize.TabsAndSpaces
+	Three	  	Bare  Tokens
+== tokenize.FirstComment
+# Comment lines start with hash and are included in the token stream.
+== tokenize.CommentWithNewline
+# Comment tokens include the terminating newline too.
+
+== tokenize.StandaloneNewlines
+# Newlines are tokenized as standalone tokens outside comments.
+
+
+   Line4	 
+
+== tokenize.ConsecutiveComments
+# Comment line 1.
+# Comment line 2.
+# Comment line 3.
+
+== tokenize.SpecialSymbols
+# Backslash-quote other special symbols in the quoted Fragment field.
+# Tab: 	
+# Double quote: "
+# Backslash: \
+# Test: \\"	\
+== tokenize.BareTokensAroundComment
+Token1
+# Some comment.
+Token2
+== tokenize.SideComment
+BareToken  # Comment can start anywhere.
+# Not just at the beginning of the line.
+== tokenize.BareNumbers
+# Bare tokens can contain digits too.
+BareToken1 12
+
+== tokenize.Symbols
+# Bare tokens can contain symbols too.
+# Tokenizer doesn't try to make sense of them, accepts anything.
+# (We'll introduce a few specially handled symbols later.)
+Floating_Number -12.34e5
+_Bare,Token|1-2+3/5@6\n -12..34e5@abc_!\
+
+== tokenize.KeyValue1
+# The colon is the first special symbol.
+# It ends a bare token; i.e. emit the token after you've seen it.
+# These are called name tokens.
+Key:  Value
+Key2: Value2
+== tokenize.KeyValue2
+# The colon is a special symbol.
+# It ends a bare token; i.e. emit the token after you've seen it.
+# These are called name tokens.
+Key:Value
+Key2:Value2
+== tokenize.KeyValue3
+# The colon is a special symbol.
+# It ends a bare token; i.e. emit the token after you've seen it.
+# These are called name tokens.
+_:Value
+== tokenize.ConsecutiveNameTokens
+# This is invalid sdin but only the AST parser will recognize this.
+a: b:c:
+== tokenize.UnsupportedISO8601
+2006-01-02T12:33
+== tokenize.ColonAfterNonIdentifier
+//x:y
+foo-bar://x:y
+== tokenize.PathName
+OuterStruct.InnerStruct.Field:xyz
+== tokenize.NoEOLNewline
+# The last comment might be missing the final newline.
+== tokenize.EmptyInput
+
+== tokenize.BlockTokens
+# Tokenize []{} symbols as standalone tokens.
+{
+  Field: [ 12 ]
+}
+
+== tokenize.TokenStarters
+# The {}[]# symbols always start a new token.
+0{1[2]3}4# comment
+
+== tokenize.TokenStarterTest
+2022-01-13.134556.123@America/New_York{+do_not_try_to_\make\_sense_of_this]#
+
+== tokenize.SimpleLiteralString
+# ' quotes start from ' and run until the next '.
+# Don't interpret the string in the tokenizer.
+# Emit the full token, including the quotes.
+'x'
+== tokenize.EmptyLiteral
+''
+== tokenize.LiteralWithSymbols
+'x .1[]*.:-= y'
+
+== tokenize.TwoLiterals
+'x' 'y'
+== tokenize.CommentAfterLiteral
+'x # y'#comment
+== tokenize.LiteralInList
+['x']['y']
+== tokenize.DoubleQuotes
+'x"y'
+== tokenize.BackslashInLiteralString
+'\'
+== tokenize.BackslashesInLiteralString
+'\\'
+== tokenize.UnterminatedLiteralLine
+'x
+y'
+
+== tokenize.UnterminatedLiteralFile
+'x
+== tokenize.SimpleInterpretedString
+# " quotes start from " and run until the next unescaped ".
+# Don't interpret the string in the tokenizer.
+# Emit the full token, including the quotes.
+# Because `Fragment` is an interpreted string itself, the quotes must be quoted.
+"x"
+
+== tokenize.InterpretedWithSymbols
+"x .1[]*.:-= y"
+
+== tokenize.EmptyInterpreted
+""
+
+== tokenize.TwoInterpreted
+"x" "y"
+
+== tokenize.InterpretedWithQuote
+"x \" y"
+
+== tokenize.InterpretedWithBackslash
+"x \\ y"
+
+== tokenize.InterpretedWithTab
+"x \t y"
+
+== tokenize.InterpretedWithEndingBackslash
+"\\"
+== tokenize.InterpretedWithManyEscapes
+"\n\\\""
+
+== tokenize.CommentAfterInterpreted
+Field:"x # y"#comment
+== tokenize.InterpretedInList
+Field:["x"]["y"]
+== tokenize.UnterminatedInterpretedLine
+"x
+y"
+
+== tokenize.UnterminatedInterpretedFile
+"x
+== tokenize.UnterminatedInterpretedQuote
+"\"
+== tokenize.UnterminatedInterpretedBackslash
+"\
+== tokenize.StringsAndBraces
+'a'{'b'["c"]"d"}"e"
+
+== tokenize.SimpleMultiquoteString1
+# Multiquote strings:
+# - start with at least three ' quotes,
+# - then some other character,
+# - some more characters,
+# - end with a run with the same or more ' quotes.
+'''|hello bob'''
+
+== tokenize.SimpleMultiquoteString2
+# Multiquote strings:
+# - start with at least three ' quotes,
+# - then some other character,
+# - some more characters,
+# - end with a run with the same or more ' quotes.
+'''
+hello bob
+'''
+
+== tokenize.LongMultiquoteString
+# Multiquote strings:
+# - start with at least three ' quotes,
+# - then some other character,
+# - some more characters,
+# - end with a run with the same or more ' quotes.
+'''''
+hello '''' quotes
+'''''
+
+== tokenize.QuoteAtEnd
+# Multiquote strings:
+# - start with at least three ' quotes,
+# - then some other character,
+# - some more characters,
+# - end with a run with the same or more ' quotes.
+'''|'hello''''
+
+== tokenize.ThreeStrings
+'''|a'''
+''
+''''|'''|'''''''
+
+== tokenize.AdjacentMultiquote
+Field1:'''|x'''#comment
+Field2:['''|y''']
+
+== tokenize.UnterminatedMultiquoteString1
+'''
+== tokenize.UnterminatedMultiquoteString2
+'''|apple
+== tokenize.UnterminatedMultiquoteString3
+'''|apple'
+== tokenize.UnterminatedMultiquoteString4
+'''|apple''
+== tokenize.UnterminatedMultiquoteString5
+'''apple''
+
+== tokenize.UnterminatedMultiquoteString6
+''''''
+
+== tokenize.BackslashInMultiquoteString1
+'''|\'''
+== tokenize.BackslashInMultiquoteString2
+'''\|'''
+== tokenize.BackslashInMultiquoteString3
+'''
+\
+'''
+== tokenize.SimpleForm
+# Similarly to :, the ( ends a form token.
+# The ) behaves similarly to } and ].
+Field: Form(NamedArg1:Value1 NamelessArg2)
+
+== tokenize.NoArgForm
+Key:Form()
+
+== tokenize.BlockArgs1
+Key: Form([])
+== tokenize.BlockArgs2
+Key: Form({} [])
+== tokenize.BlockArgs3
+Key: Form({InnerKey InnerValue} [ListValue1 ListValue2])
+
+== tokenize.InnerForm
+Key: OuterForm(Arg1 Name:InnerForm(Arg2) [Arg3()])
+
+== tokenize.NoMultilineComments
+### There are no multiline comments.
+#{{
+#}}
+### In any form.
+/**** UnsupportedComment ****/
+
+== tokenize.Directives
+# The #% marks the directive lines but more on this later.
+#% sdin.KeepSorted()
+SortedList: [alice bob charlie]
+
+== ast.Intro
+Field1:Value1 Field2:Value2
+== ast.PretokenComment
+# Comments before the values appear in the Pre token list.
+Fieldname: Value
+== ast.PosttokenComment
+Fieldname: Value # Comments on the same line appear as the Post token.
+== ast.BothComments
+# A value can have both a Pre comment.
+Fieldname: Value # And a Post comment.
+== ast.SeparatedFieldValue
+# There cannot be a newline between the field and value.
+Fieldname:
+Value
+== ast.FieldValueMidComment
+Fieldname: # Fields cannot have side comments either.
+Value
+== ast.NewlineInPosttoken
+# A single newline is a posttoken too.
+Fieldname: Value
+
+== ast.NotPair1
+# The top-level struct is a list of name-value pairs.
+Value1 Value2
+
+== ast.NotPair2
+# The top-level struct is a list of name-value pairs.
+Name1: Name2:
+
+== ast.NotPair3
+# Colon is the name marker, not the equals sign.
+Name=Value
+
+== ast.TwoValuesSingleLine
+Fieldname1:Value1 Fieldname2:Value2
+
+== ast.TwoValuesTwoLines
+Field1: Value1
+Field2: Value2
+
+== ast.EmptyLinesInPretokens
+Field1: Value1
+
+
+Field2: Value2
+
+== ast.ExampleInput
+# A Pre comment.
+Field1: Value1
+Field2: Value2  # A post comment.
+
+== ast.IgnoreWhitespace
+Fieldname1:    Value1
+
+
+	Fieldname2: Value2
+
+== ast.AllValueKinds
+# Make sure to support all the value kinds.
+# Use the raw token as the value.
+Field1: 0number
+Field2: identifier
+Field3: 'literal string'
+Field4: "quoted string"
+Field5: '''|raw string'''
+
+== ast.LinenumberTracking
+F1: '''|
+raw
+value 1''' F2: '''|
+raw
+value 2'''
+
+Field: Value
+
+== ast.SimpleSinglelineListAtEOF
+List: [1 2 3]
+== ast.SimpleSinglelineListOwnLine
+List: [1 2 3]
+
+== ast.SimpleMultilineList
+List: [
+	1
+	2
+	3
+]
+== ast.SimpleMixedLineList
+List: [
+	1
+	2 3
+	4 5 6
+	7
+]
+== ast.SimpleListWithPreToken
+# A Pre token.
+List: [
+	1
+	2
+]
+== ast.SimpleListWithPostToken
+List: [ # a Post comment
+	1
+	2
+]
+== ast.SimpleListWithClosingComments
+List: [
+	1
+	2
+	# Comments before the closing token go to PreClose.
+]
+== ast.SimpleListWithClosingPosttoken
+List: [
+	1
+	2
+] # closing posttoken goes to PostClose too.
+== ast.SimpleListWithNewlineAfterwards1
+List: [
+	1
+	2
+] # there's a newline after this comment
+
+== ast.SimpleListWithNewlineAfterwards2
+List: [
+	1
+	2
+]
+
+== ast.SimpleListWithAllComments
+# Pre
+List: [  # Post
+	# PreClose
+]  # PostClose
+
+== ast.SimpleListWithEntryComments
+List: [
+	# List entries can have tokens too.
+	1
+	2 # And a posttoken too.
+]
+== ast.EmptyListSingleLine
+List: []
+== ast.EmptyListWithComment
+List: [
+	# A closetokens comment.
+]
+== ast.TwoLists1
+List1:[a] List2:[b]
+
+== ast.TwoLists2
+List1:[a]
+List2:[b]
+
+== ast.TwoLists3
+List1:[a]
+
+List2:[b]
+
+== ast.SimpleListWithList
+List1: [[1 2 3] [4 5]]
+List2: [6]
+
+== ast.NamedListValue
+# Lists cannot contain named values.
+List: [Name: Value]
+
+== ast.SimpleObject
+Object: {
+	Field1: Value1
+	Field2: Value2
+}
+
+== ast.SimpleCommentedObject
+Object: {
+	# Pre comment.
+	Field1: Value1
+	Field2: Value2 # Post comment.
+	# PreClose comment 1.
+	# PreClose comment 2.
+} # closetoken comment 3.
+
+== ast.EmptyObjectSingleLine
+Object: {}
+
+== ast.EmptyObjectWithComment
+Object: {
+	# A closetokens comment.
+}
+
+== ast.ObjectWithList
+Object: {
+	List: [1 2 3]
+}
+
+== ast.ListWithObject
+List: [
+	{
+		Field1: 1
+		Field2: 2
+	}
+	{
+		Field2: 2
+		Field3: 3
+		Field4: []
+	}
+]
+
+== ast.UnevenlySpacedTightObject
+AList: [
+  { k1: v1
+  k2: v2 }{k1: v1
+  k2: [v2]}
+]
+
+== ast.ObjectWithDuplicateField1
+Field: 1
+Field: 1
+
+== ast.ObjectWithDuplicateField2
+Field1: 1
+Field2: 2
+Field1: 1
+
+== ast.ObjectWithDuplicateField3
+Field: []
+Field: []
+
+== ast.ObjectWithDuplicateField4
+Field: {}
+Field: {}
+
+== ast.NonIdentifierName1
+Value1 Value2
+
+== ast.NonIdentifierName2
+Field-Name: Value
+
+== ast.NonIdentifierName3
+: Value
+
+== ast.NonIdentifierName4
+123: Value
+
+== ast.NonIdentifierName5
+[ Value
+
+== ast.NonIdentifierName6
+Value?: 2006
+
+== ast.MissingValue
+Field1: Field2: Name
+
+== ast.MatchingBlocksxo
+x: {
+== ast.MatchingBlocksO
+}
+== ast.MatchingBlocksxO
+x: }
+== ast.MatchingBlocksxlO
+x: [
+}
+== ast.MatchingBlocksyl
+y: [
+== ast.MatchingBlocksL
+]
+== ast.MatchingBlocksxL
+x: ]
+== ast.MatchingBlocksyoL
+y: {
+]
+== ast.RootPretokens
+# Does the file start with a comment?
+# Is there an empty newline before the first field comment?
+# If so then put the first comment block as a Pre token for the root object.
+# These are meant to be "file-level comments" for convenience.
+
+# The rest is field comments.
+
+# Field comment 2.
+Field: Value
+== ast.RootClosetokens
+# Root Pre comment.
+
+# Node comment.
+Field: Value
+
+# Attach ending comments to the root object's PreClose.
+== ast.CommentsOnly
+# This file has only comments.
+# There are no values in this file.
+
+# Only the first paragraph goes to Pre.
+# The rest goes to PreClose.
+
+== serialize.Intro
+Hello1: World1
+Hello2: World2
+== serialize.RemoveComments
+# Remove comments from the serialization.
+Hello: World
+== serialize.SimpleList
+# Everything should be one line.
+Hello: World
+List: [
+  1
+  2
+  3
+]
+
+== serialize.PostComment
+Struct: {
+  Key: Value # Remove Post comments too.
+}
+== serialize.ListAndStruct
+List: [
+  0
+  {Key1:Value1 Key2:Value2}
+  Value3
+  [Value4]
+  [Value5 [Value6][]{}]
+]
+
+== serialize.SimpleStrings
+# Change all strings to interpreted strings.
+A: "double\n"
+B: 'single\n'
+
+== ast.UninterpretedStrings1
+# Keep raw and multiline strings uninterpreted in the AST.
+A: '''|raw string line 1
+  line 2'''
+B: '''
+  multiline
+  string
+  '''
+
+== ast.UninterpretedStrings2
+A: '''some string tag 1|raw string line 1
+  line 2'''
+B: '''some string tag 2
+  multiline
+  string
+  '''
+
+== tojson.EmptyObject
+# Welcome to the tojson task!
+# Take your AST and emit it back as json!
+# This input is empty so emit an empty json object.
+
+== tojson.OneStringToString
+# Indent the json with tabs.
+# Ignore the comments.
+Field1: "Value 1"
+
+== tojson.ThreeStringsToStrings
+Field1: "Value 1"
+Field2: "Value 2"
+Field3: "Value 3"
+
+== tojson.InterpretLiteralsWithTabsEtc
+# Interpret the strings and emit them back as quoted strings.
+Field1: 'Value with a tab: 	'
+Field2: 'Value with a backslash: \'
+Field3: 'Value with a double quote: "'
+
+== tojson.InterpretQuotedStringsWithTabsEtc
+Field1: "Value with a tab: \t"
+Field2: "Value with a tab: 	"
+Field3: "Value with a backslash: \\"
+Field4: "Value with a double quote: \""
+Field5: "Value with a newline: \n"
+
+== tojson.IdentifierFields
+# In json the keys have to be strings.
+# Convert identifier fields to strings.
+
+Field1:           "Value 1"
+Some_Other_Field: "Value 2"
+true:             "Value 3"
+false:            "Value 4"
+
+== tojson.GoodIdentifierValues
+# If value is `true` or `false` then keep that.
+# Error out on all other identifiers.
+# json doesn't have the concept of identifiers or enums.
+
+Field1: true
+Field2: false
+Field3: "true"
+Field4: "false"
+
+== tojson.BadIdentifierValues1
+# If value is `true` or `false` then keep that.
+# Error out on all other identifiers.
+# json doesn't have the concept of identifiers or enums.
+
+Field: True
+
+== tojson.BadIdentifierValues2
+# If value is `true` or `false` then keep that.
+# Error out on all other identifiers.
+# json doesn't have the concept of identifiers or enums.
+
+Field: no
+
+== tojson.BadComment1
+Field: true // Comment.
+
+== tojson.BadComment2
+Field: true /* Comment. */
+
+== tojson.SimpleNumbers
+Field1: 1
+Field2: 23
+Field3: -4567
+Field4: +890   # numbers can't have + in json; simply remove it
+
+== tojson.Floats
+# Keep the token intact if json can parse it.
+
+Pi:       3.14
+Planck:   6.626e-34
+Negative: -2.1
+Positive: +2.1
+
+== tojson.NumberBases
+# Interpret hex, octal, and binary number bases while at it.
+# Support 64-bit signed integers in this form.
+Hex:    0xdeadBEEF
+Octal:  0o644
+Binary: 0b1100
+
+== tojson.Underscores
+# sdin integers can have underscores in them, ignore those.
+# It's for making digit grouping easy.
+
+Million:  1_000_000
+GibiByte: 1_073_741_824
+DeadBeef: 0xDEAD_beef
+Planck:   6.626_e-34
+
+== tojson.DecimalMultipliers
+Kilo1: 1000
+Kilo2: 1K
+Mega1: 1000K
+Mega2: 1M
+Giga1: 1000M
+Giga2: 1G
+Tera1: 1000G
+Tera2: 1T
+
+== tojson.BinaryMultipliers
+Kibi1: 1024
+Kibi2: 1Ki
+Mebi1: 1024Ki
+Mebi2: 1Mi
+Gibi1: 1024Mi
+Gibi2: 1Gi
+Tebi1: 1024Gi
+Tebi2: 1Ti
+
+== tojson.Durations
+Millisecond1:  1
+Second:        1s
+Minute:        1m
+Hour:          1h
+Day:           1d
+Week:          1w
+NinetyMinutes: 1.5h
+Millisecond2:  0.001s
+Microsecond1:  0.001
+Microsecond2:  1.000001s
+Microsecond3:  1.234_567_800_09s
+
+== tojson.Timestamps
+# Timestamps are in UTC unless otherwise specified.
+# `:` is reserved; accept underscore instead in the time part.
+
+Date:        2006-01-02
+Minute:      2006-01-02.15_04
+Second:      2006-01-02.15_04_05
+Millisecond: 2006-01-02.15_04_05.123
+Timezone1:   2006-01-02.15_04_05.123@UTC
+Timezone2:   2006-01-02.15_04@local
+Timezone3:   2006-01-02.15_04@Australia/Sydney
+Timezone4:   2006-01-02.15_04_00@America/New_York
+
+== tojson.SimpleObject
+EmptyObject:       {}
+SingleFieldObject: {Field1:1}
+Object: {
+  Field2: 123
+  Field3: "234"
+  Field4: true
+}
+
+== tojson.ObjectInObject
+Object: {
+  Field1: 123
+  Field2: "234"
+  Field3: {Subfield1:567 Subfield2:"890"}
+  Field4: {}
+  Field5: true
+}
+
+== tojson.SimpleList
+EmptyList:         []
+SingleElementList: [1]
+List:              [2 3 4]
+
+== tojson.ComplexList
+List: [
+  [1 2 3]
+  {Field1:"Value1"}
+  [{Field2:["Value2"]}]
+]
+
+== tojson.CommaList
+# There are no commas in sdin.
+List: [1, 2, 3]
+
+== tojson.SimpleRaw
+RawString: '''|hello'''
+
+== tojson.RawWithQuote
+RawString: '''|hello'world'''
+
+== tojson.RawWithTwoQuotes
+RawString: '''|hello''world'''
+
+== tojson.RawWithSurroundingQuote
+RawString: '''|'hello'world''''
+
+== tojson.RawStringTwoClosingQuotes
+RawString: '''|hello''world'''
+
+== tojson.NewlineAfterRawString
+RawString: '''|hello'''
+
+== tojson.RawWithMoreQuotes
+# There can be more than three opening quotes.
+RawString: ''''|this has an embedded '''|raw string''' in it''''
+
+== tojson.RawWithTag
+# Ignore tags for now.
+TaggedRawString: ''''tag|x''''
+
+== tojson.RawWithMultiwordTag
+# Ignore tags for now.
+TaggedRawString1: '''tag with multiple words|x'''
+TaggedRawString2: '''tag_with-multiple/symbols|x'''
+
+== tojson.RawWithNewlines
+RawString: '''|x
+hello
+
+newline
+
+y'''
+
+== serialize.RawWithNewlines
+# Interpret raw strings in the serialize task too.
+RawString: '''|x
+hello
+
+newline
+
+y'''
+
+== tojson.EmptyRaw
+RawString: '''|'''
+
+== tojson.UnterminatedRawLine
+RawString: '''|
+
+== tojson.UnstartedRawString
+RawString: '''x'''
+
+== serialize.SimpleMultiline
+# If there's no | but there's a newline, then it's a multiline string.
+# In a multiline string each line ends with a newline, unix-style.
+MultilineString: '''
+Hello
+world!
+'''
+
+== serialize.EmptyMultiline
+EmptyString: '''
+'''
+
+== serialize.MultilineWithTags
+# The line with the opening quotes can have a tag after the quotes.
+# The tag can contain any characters except | and a newline.
+CodeString: '''go -- this is a tag and it's not part of the string
+package main
+func main() {
+	return
+}
+'''
+
+== tojson.InvalidMultiquoteString
+# There are no other forms of multiquote strings.
+String: ''' '''
+
+== tojson.InvalidTag1
+String: '''invalid'''
+
+== tojson.InvalidTag2
+String: '''invalid\n'''
+
+== tojson.InvalidQuote
+# Only triple single quotes work.
+String: """|bad quote"""
+
+== serialize.MultilineWithEmptyLineUnindented
+MultilineString: '''
+Line 1
+
+Line 3
+'''
+
+== tojson.SimpleTabIndentedMultilineString
+# Multiline strings can be indented.
+# The indentation is not part of the interpreted string.
+# The closing quote's indentation determines the indent.
+MultilineString: '''
+	Hello
+	World
+	'''
+
+== tojson.MultilineStringWithInnerTabIndentation
+# Don't eat all leading whitespace.
+CodeString: '''
+	package main
+	func main() {
+		return
+	}
+	'''
+
+== tojson.SimpleNonTabIndentedMultilineString
+# Support space indentation too.
+MultilineString: '''
+                Hello
+                World
+                '''
+
+== tojson.TabIndentedEmptyLines
+# Empty lines don't need to be indented.
+MultilineString: '''
+	1
+	2
+
+	
+	3
+	'''
+
+== tojson.BadIndentation
+# Error out on inconsistent indentation.
+# Do you report line numbers?
+# Then make sure the line number is accurate.
+GoodString: '''
+  1
+  2
+  3
+  '''
+
+BadString: '''
+    1
+  2
+    3
+    '''
+
+== tojson.MultilineTabsAndSpaces
+# Allow both tabs and spaces.
+Object: {
+	MultilineString: '''
+	                This is a
+	                multiline
+	                string!
+	                '''
+}
+
+== tojson.RawTabsAndSpaces
+# Don't remove indentation from raw strings though.
+Object: {
+	RawString: '''|
+	          This is a
+	          raw
+	          string!
+	          '''
+}
+
+== tojson.MultiEmptyLines
+Object: {
+  EmptyString: '''
+
+
+    '''
+}
+
+== tojson.InvalidMultilineString
+S: '''
+  Hello
+  ''''
+
+== serialize.MultiquoteStrings1
+# Interpret the strings when serializing so that the output stays on a single line.
+A: '''|raw string line 1
+  line 2'''
+# Remove extra indentation for multiline strings.
+# The closing quote's line defines the indentation to remove.
+B: '''
+  multiline
+  string
+  '''
+
+== serialize.MultiquoteStrings2
+# Interpret the strings when serializing so that the output stays on a single line.
+A: '''some tag 1|raw string line 1
+  line 2'''
+# Remove extra indentation for multiline strings.
+# The closing quote's line defines the indentation to remove.
+B: '''tag 2
+  multiline
+  string
+  '''
+
+== ast.SimpleForm
+# Forms are like a combination of lists and structs.
+# They can contain both unnamed and named values.
+
+Username: stdemo.Env(USER default:'root')
+
+== ast.NoArgForm
+Key: Dir()
+
+== ast.UnclosedForm
+Key: Dir(Arg1 Arg2
+
+== ast.BlockArgs
+Key: Form({InnerKey: InnerValue} [ListValue1 ListValue2])
+
+== ast.InnerForm
+Key: OuterForm(Arg1 InnerForm(Arg2) Arg3)
+
+== ast.UntaggedForm1
+# All forms must have a tag name.
+# Otherwise both lists below would be valid but different lists.
+# The only difference is a space, and this would be surprising.
+List1: [Tag()]
+List2: [Tag ()]
+
+== ast.UntaggedForm2
+Name: ()
+
+== ast.UntaggedForm3
+Name: Form(())
+
+== ast.NoTypeAnnotations
+Year: (int)2006
+
+== ast.FormNames
+# Any bare token can be the name inside a form.
+Name: Form(
+  2006-foo/bar@baz: 123
+)
+
+== ast.DuplicateNamesInForms
+# Forms allow duplicate names, go wild!
+F: F(
+  F(F:1 F:2)
+  F(F-F:1)
+)
+
+== ast.ValuelessForm1
+Name: Form(Name:)
+
+== ast.ValuelessForm2
+Name: Form(Name1: Name2:)
+
+== ast.MatchingBlocksxf
+x: f(
+== ast.MatchingBlocksF
+)
+== ast.MatchingBlocksxF
+x: )
+== ast.MatchingBlocksyfOF
+y: f(
+})
+== ast.MatchingBlocksEnvFunc
+Username: stdemo.Env(USER root]
+== ast.NonIdentifierName7
+stdemo.Env(USER 'root') Value
+
+== serialize.Forms
+Key: Form(Struct:{InnerKey: InnerValue} [ListValue1 ListValue2])
+
+== tojson.NonexistentForm
+# Error out for unexpected forms in tojson.
+Value: NonexistentForm()
+
+== tojson.EnvIdentifierArg1
+# Interpret the stdemo.Env() form as an environment variable lookup.
+# Replace such a node's value with the environment's value.
+Value: stdemo.Env(SDINTHROUGH_TESTVAR)
+
+== tojson.EnvIdentifierArg2
+# Interpret the stdemo.Env() form as an environment variable lookup.
+Value: stdemo.Env(
+  # Form arguments can have Pre comments too.
+  SDINTHROUGH_TESTVAR  # And a Post comment too.
+)
+
+== tojson.EnvError
+Value: stdemo.Env(SDINTHROUGH_NONEXISTENT)
+
+== tojson.EnvDefault
+Value: stdemo.Env(SDINTHROUGH_NONEXISTENT default:'default-value')
+
+== tojson.EnvInvalidDefault1
+# An envvar's type is always a string, so error out for non-string default values.
+Value: stdemo.Env(SDINTHROUGH_NONEXISTENT default:123K)
+
+== tojson.EnvInvalidDefault2
+# An envvar's type is always a string, so error out for non-string default values.
+Value: stdemo.Env(SDINTHROUGH_NONEXISTENT default:true)
+
+== tojson.EnvInvalidDefault3
+# An envvar's type is always a string, so error out for non-string default values.
+Value: stdemo.Env(SDINTHROUGH_NONEXISTENT default:InvalidValue)
+
+== tojson.EnvUnusedDefault
+Value: stdemo.Env(SDINTHROUGH_TESTVAR default:'default-value')
+
+== tojson.EnvInvalidInvocation1
+Value: stdemo.Env(SDINTHROUGH_TESTVAR InvalidArg)
+
+== tojson.EnvInvalidInvocation2
+Value: stdemo.Env(SDINTHROUGH_TESTVAR default:'default-value' InvalidArg)
+
+== tojson.EnvInvalidInvocation3
+Value: stdemo.Env(SDINTHROUGH_TESTVAR default= 'invalid')
+
+== tojson.EnvTooFewArgs
+Value: stdemo.Env()
+
+== tojson.EchoNumber
+# Implement the stdemo.Echo(sdintxt) form.
+# The sdintxt is a string argument that represents an sdin value.
+# Parse that and replace the node's value with that.
+
+Value: stdemo.Echo('1')
+
+== tojson.EchoBasicTypes
+Value1: stdemo.Echo('''|'string value 1'''')
+Value2: stdemo.Echo('''|"string value 2"''')
+Value3: stdemo.Echo('''|+1.5h''')
+Value4: stdemo.Echo('''|true''')
+
+== tojson.EchoBadToken
+Value: stdemo.Echo("'''")
+
+== tojson.EchoEmptyToken
+Value: stdemo.Echo("")
+
+== tojson.EchoTwoValues
+Value: stdemo.Echo("1 2")
+
+== tojson.EchoList
+Value1: stdemo.Echo('[]')
+Value2: stdemo.Echo('[1 2 3]')
+
+== tojson.EchoObject
+Value1: stdemo.Echo('{}')
+Value2: stdemo.Echo('{A:1 B:2 C:3}')
+
+== tojson.EchoInSimpleObject
+Object: {
+  A: stdemo.Echo('123')
+  B: [
+    stdemo.Echo('false')
+    stdemo.Echo('true')
+  ]
+}
+
+== tojson.StringMap
+Object: map(
+  'hello world'  1
+  'hello colon:' 2
+)
+
+== tojson.MapInList
+List: [
+  1
+  map('hello world' [2 3])
+  4
+]
+
+== tojson.ManyFieldsMap
+M: map(
+  'a'      +1
+  "b"      '2'
+  '''|c''' true
+  '''
+    d
+    ''' [false]
+)
+
+== tojson.EmptyMap
+M: map()
+
+== tojson.EmptyEmbeddedMap
+M: map(a map() b 1 c map())
+
+== tojson.NonScalarMap1
+M: map([1] 1)
+
+== tojson.NonScalarMap2
+M: map({} 1)
+
+== tojson.NonScalarMap3
+M: map(map() 1)
+
+== tojson.NoValueMap
+M: map(1)
+
+== tojson.NamedValueMap1
+M: map(Field:1)
+
+== tojson.NamedValueMap2
+M: map(Field1:1 Field2:2)
+
+== tojson.DuplicateElementMap
+M: map(
+  a 1
+  b 2
+  a 3
+)
+
+== forms.PrintIntro
+stdemo.Print("Print this.\n")
+
+== forms.PrintTwoLines
+stdemo.Print("Print line 1.\nPrint line 2.")
+
+== forms.PrintTabs
+stdemo.Print("func main() {\n\tfmt.Println(\"Hello world.\")\n}\n")
+
+== forms.PrintRaw
+stdemo.Print('''|func main() {
+  fmt.Println("Hello world.")
+}
+''')
+
+== forms.PrintMultiline
+stdemo.Print('''
+  func main() {
+    fmt.Println("Hello world.")
+  }
+  ''')
+
+== forms.PrintSimpleConfig
+stdemo.Print('''
+  # This is a simple key+stringValue configuration.
+  configOption1 "configValue1"
+  configOption2 "configValue2"
+  ''')
+
+== forms.PrintWithoutComments1
+# Interpret stdemo.RemoveComments tagged strings by removing # lines from them.
+stdemo.Print('''stdemo.RemoveComments
+  # This is a simple key+stringValue configuration.
+  configOption1 "configValue1"
+  configOption2 "configValue2"
+  configOption3 "configValue3"
+  ''')
+
+== forms.PrintWithoutComments2
+# Interpret stdemo.RemoveComments tagged strings by removing # lines from them.
+stdemo.Print('''stdemo.RemoveComments
+  # Comment 1.
+  configOption1 "configValue1"
+  # Comment 2.
+  # Comment 3.
+  configOption2 "configValue2"
+  ''')
+
+== forms.PrintWithoutComments3
+# Remove empty lines too.
+stdemo.Print('''stdemo.RemoveComments
+  # Comment 1.
+  configOption1 "configValue1"
+  # Comment 2.
+
+  # Comment 3.
+  configOption2 "configValue2"
+  ''')
+
+== forms.PrintWithoutComments4
+# Remove indented lines too.
+stdemo.Print('''stdemo.RemoveComments
+  # Comment 1.
+  configOption1 "configValue1"
+      # Comment 2.
+
+    # Comment 3.
+  configOption2 "configValue2"
+  ''')
+
+== ast.PrintWithoutComments
+# Keep the string uninterpreted in the ast task.
+V: stdemo.Print('''stdemo.RemoveComments
+  # Comment 1.
+  configOption1 "configValue1"
+      # Comment 2.
+
+    # Comment 3.
+  configOption2 "configValue2"
+  ''')
+
+== tojson.PrintWithoutComments1
+# Replace RemoveComments tagged strings in the tojson task too.
+V: '''stdemo.RemoveComments
+  # Comment 1.
+  configOption1 "configValue1"
+      # Comment 2.
+
+    # Comment 3.
+  configOption2 "configValue2"
+  '''
+
+== tojson.PrintWithoutComments2
+# Replace RemoveComments tagged strings in the tojson task too.
+A: {
+  B: [
+    '''stdemo.RemoveComments
+      # Comment 1.
+      configOption1 "configValue1"
+          # Comment 2.
+
+        # Comment 3.
+      configOption2 "configValue2"
+      '''
+  ]
+}
+
+== tojson.PrintWithComments
+V: '''
+  # Comment 1.
+  configOption1 "configValue1"
+      # Comment 2.
+
+    # Comment 3.
+  configOption2 "configValue2"
+  '''
+
+== forms.HTMLIntro
+stdemo.HTML(
+  title('Hello title!')
+  body(
+    p('Hello ' span('colorful') ' body!')
+  )
+)
+
+== forms.HTMLEntities1
+stdemo.HTML(
+  'Make sure to escape < and >.'
+)
+
+== forms.HTMLEntities2
+stdemo.HTML(
+  "Make sure to escape &, ', and \" too."
+)
+
+== forms.HTMLAttributes
+stdemo.HTML(
+  p("Hello \n" span(class:colored onclick:'alert("Clicked!")' "\ncolorful") "\nbody!\n")
+
+  p("<input> has no closing tag.\n")
+  input(placeholder:'''|this is the textbox's placeholder''')
+  span("\n")
+  input(placeholder:"placeholder with a \" quote")
+)
+
+== forms.HTMLList
+stdemo.HTML(
+  title('Advantages of SDINHTML')
+  body(
+    p("Here's how sdin HTML looks like:")
+    pre('''
+      stdemo.HTML(
+        title('Title')
+        p('Body')
+      )
+      ''')
+    p(style:'font-weight:bold' 'Advantages:')
+    ol(
+      li('Closing tags get simplified to a closing paren.')
+      li('Easy AST manipulation with code.')
+    )
+  )
+)
+
+== forms.ImportIntro
+stdemo.GoImport(
+  'fmt'
+  'strings'
+)
+
+== forms.ImportNamed
+stdemo.GoImport(
+  grouppb:      'example.com/groupmanager/group_generated_proto'
+  lookuppb:     'example.com/groupserver/lookup_generated_proto'
+  membershippb: 'example.com/groupmanager/membership_generated_proto'
+  userpb:       'example.com/groupmanager/user_generated_proto'
+)
+
+== forms.ImportBlank
+stdemo.GoImport(
+  _: 'strings'
+)
+
+== forms.ImportOrdering
+stdemo.GoImport(
+  'os'
+  'strings'
+  'fmt'
+)
+
+== forms.ImportSections
+stdemo.GoImport(
+  _:            'example.com/groupserver/initserver'
+  userpb:       'example.com/groupmanager/user_generated_proto'
+  membershippb: 'example.com/groupmanager/membership_generated_proto'
+  lookuppb:     'example.com/groupserver/lookup_generated_proto'
+  grouppb:      'example.com/groupmanager/group_generated_proto'
+
+  'os'
+  'strings'
+  'bytes'
+
+  _: 'embed'
+)
+
+== forms.ImportRemoveComments
+# The import section in Go is usually autogenerated so remove any human commentary.
+# The _ imports are manual so keep the Post comments for those.
+stdemo.GoImport(
+  # Remove all Pre commentary.
+  userpb:       'example.com/groupmanager/user_generated_proto'
+  membershippb: 'example.com/groupmanager/membership_generated_proto'
+  lookuppb:     'example.com/groupserver/lookup_generated_proto'
+  grouppb:      'example.com/groupmanager/group_generated_proto'
+  _:            'embed'
+
+  _: 'example.com/groupserver/initserver'  # For the autostart.
+
+  # Remove all Pre commentary.
+  'os'   # Remove this post comment.
+  'fmt'
+)
+
+== forms.ImportUnnamedAndBlank
+stdemo.GoImport(
+  _:'embed' 'fmt'
+)
+
+== tojson.Skip
+# Directives are comments starting with #% that contain an sdin form.
+# The individual nodes can be annotated with them to add tool-specific meaning.
+# Skip emitting a field to JSON if it has the stdemo.SkipJSONEmit() form comment.
+
+A: 1
+#% stdemo.SkipJSONEmit()
+B: 2
+C: 3
+
+== forms.GroupsIntro
+stdemo.Groups(
+  g/group: [u/a u/ab]
+)
+
+== forms.GroupsAlphaOrder
+stdemo.Groups(
+  g/bgroup: [u/bob u/alice u/charlie]
+  g/agroup: [u/charlie u/alice u/bob]
+)
+
+== forms.GroupsInvalidName1
+stdemo.Groups(
+  g/group: [u/toolongabcd]
+)
+
+== forms.GroupsInvalidName2
+stdemo.Groups(
+  g/group: [u/nonletter7]
+)
+
+== forms.GroupsInvalidName3
+stdemo.Groups(
+  g/group: [unprefixed]
+)
+
+== forms.GroupsInvalidName4
+stdemo.Groups(
+  g/toolongroup: []
+)
+
+== forms.GroupsInvalidName5
+stdemo.Groups(
+  unprefixed: []
+)
+
+== forms.GroupsInvalidName6
+stdemo.Groups(
+  u/user: []
+)
+
+== forms.GroupsInvalidType1
+stdemo.Groups(
+  g/group: 'not a list'
+)
+
+== forms.GroupsInvalidType2
+stdemo.Groups(
+  g/group: {}
+)
+
+== forms.GroupsDesc1
+stdemo.Groups(
+  # These users are very powerful.
+  g/admins: [u/alice]
+
+  # These users have commit access.
+  # They have finished the training.
+  # Omit the trailing newline.
+  g/developers: [u/bob u/charlie]
+)
+
+== forms.GroupsDesc2
+stdemo.Groups(
+  # These users are very powerful.
+  g/admins: [u/alice]
+
+  # These users have commit access.
+  # They have finished the training.
+  #
+  # This description has two paragraphs.
+  g/developers: [u/bob u/charlie]
+)
+
+== forms.GroupsExpansion1
+stdemo.Groups(
+  # The fully trained employees.
+  g/developers: [u/alice]
+  # The people with write access to the source repository.
+  g/committers: [g/developers]
+)
+
+== forms.GroupsExpansion2
+stdemo.Groups(
+  g/trained:    [u/alice]
+  g/developers: [g/trained]
+  g/committers: [g/developers]
+)
+
+== forms.GroupsExpansion3
+stdemo.Groups(
+  g/committers: [g/developers]
+  g/trained:    [u/alice]
+  g/developers: [g/trained]
+)
+
+== forms.GroupsExpansion4
+stdemo.Groups(
+  # These users are very powerful.
+  g/admins: [u/alice]
+
+  # These users have commit access.
+  # They have finished the training
+  g/developers: [u/bob u/charlie]
+
+  # This group contains all people from the office.
+  g/allpeople: [g/admins g/developers]
+)
+
+== forms.GroupsDuplicate
+stdemo.Groups(
+  g/group: [u/alice]
+  g/group: [u/bob]
+)
+
+== forms.GroupsNonexistent
+stdemo.Groups(
+  g/group: [g/missing]
+)
+
+== forms.GroupsCycle1
+stdemo.Groups(
+  g/group: [g/group]
+)
+
+== forms.GroupsCycle2
+stdemo.Groups(
+  g/groupa: [g/groupb]
+  g/groupb: [g/groupa]
+)
+
+== forms.GroupsCycle3
+stdemo.Groups(
+  g/groupa: [g/groupb]
+  g/groupb: [g/groupc]
+  g/groupc: [g/groupa]
+)
+
+== forms.DuplicateMembers
+stdemo.Groups(
+  g/groupa: [u/alice]
+  g/groupb: [u/alice]
+  g/groupc: [g/groupa g/groupb]
+)
+
+== forms.GroupsMixed
+stdemo.Groups(
+  g/employees: [u/alice u/bob u/charlie]
+  # Contributors.
+  g/contribers: [u/dave u/frank]
+  g/readers:    [g/writers g/employees g/contribers u/gabe]
+  g/writers:    [g/admins g/employees]
+  g/admins:     [u/alice u/bob]
+)
+
+== tojson.KeepSorted
+# Sort the children if you see a #% sdin.KeepSorted() directive.
+
+#% sdin.KeepSorted()
+UserList: [
+  'charlie'
+  'alice'
+  'dave'
+  'frank'
+  'bob'
+]
+
+== tojson.StringSorting
+# Sort based on the string content for string tokens.
+
+#% sdin.KeepSorted()
+UserList: [
+  'charlie'
+  "alice"
+  "dave"
+  'frank'
+  '''|bob'''
+]
+
+== tojson.AllowedDirectivePackages
+# The preamble (root's Pre part) can restrict what packages the directives can come from.
+# That's the part before the dot.
+# sdin is always allowed.
+# If present, then directives from other packages should be disallowed.
+#% sdin.DirectivePackages(stdemo)
+
+A: 1
+#% stdemo.SkipJSONEmit()
+B: 2
+C: 3
+
+== tojson.DisallowedDirectivePackages
+# The preamble (root's Pre part) can restrict what packages the directives can come from.
+# That's the part before the dot.
+# sdin is always allowed.
+# If present, then directives from other packages should be disallowed.
+#% sdin.DirectivePackages(otherpkg)
+
+A: 1
+#% stdemo.SkipJSONEmit()
+B: 2
+C: 3
+
+== tojson.UnusedDirectivePackages1
+# The preamble (root's Pre part) can restrict what packages the directives can come from.
+# That's the part before the dot.
+# sdin is always allowed.
+# If present, then directives from other packages should be disallowed.
+#% sdin.DirectivePackages(otherpkg)
+
+A: 1
+B: 2
+C: 3
+
+== tojson.UnusedDirectivePackages2
+# The preamble (root's Pre part) can restrict what packages the directives can come from.
+# That's the part before the dot.
+# sdin is always allowed.
+# If present, then directives from other packages should be disallowed.
+#% sdin.DirectivePackages(stdemo otherpkg)
+
+A: 1
+#% stdemo.SkipJSONEmit()
+B: 2
+C: 3
+
+== tojson.AllowedFormPackages
+# The preamble (root's Pre part) can restrict what packages the forms can come from.
+# That's the part before the dot.
+# Forms from other packages should be disallowed.
+#% sdin.FormPackages(stdemo)
+
+Var:  stdemo.Env(SDINTHROUGH_TESTVAR)
+Bool: stdemo.Echo('true')
+
+== tojson.DisallowedFormPackages
+# The preamble (root's Pre part) can restrict what packages the forms can come from.
+# That's the part before the dot.
+# Forms from other packages should be disallowed.
+#% sdin.FormPackages(otherpkg)
+
+Var:  stdemo.Env(SDINTHROUGH_TESTVAR)
+Bool: otherpkg.Echo('true')
+
+== tojson.UnusedFormPackages1
+# The preamble (root's Pre part) can restrict what packages the forms can come from.
+# That's the part before the dot.
+# Forms from other packages should be disallowed.
+#% sdin.FormPackages(otherpkg)
+
+Var:  'var'
+Bool: true
+
+== tojson.UnusedFormPackages2
+# The preamble (root's Pre part) can restrict what packages the forms can come from.
+# That's the part before the dot.
+# Forms from other packages should be disallowed.
+#% sdin.FormPackages(stdemo otherpkg)
+
+Var:  stdemo.Env(SDINTHROUGH_TESTVAR)
+Bool: stdemo.Echo('true')
+
+== ast.SimpleFlatList
+# Congrats on completing the forms task!
+# Time for implementing the flat notation.
+
+List+: 1
+List+: 2
+List+: 3
+
+== ast.FlatListAtEOF
+List+: 1
+List+: 2
+List+: 3
+== ast.CommentedFlatList
+List+: 1 # Post comment.
+# Element comment.
+List+: 2
+List+: [3]
+
+== ast.InvalidFlatList
+# List elements must be continuous.
+List+:  1
+Field1: 2
+List+:  3
+
+== ast.FlatListInObject
+Object: {
+  AField: 1
+  List+:  2
+  List+:  3
+  BField: 4
+}
+
+== ast.ThreeLists
+List1+: 1
+List1+: 2
+List2+: 3
+List2+: 4
+List3:  [5 6]
+
+== ast.FlatListObjects
+List1+: 1
+List1+: [2 3]
+List1+: {F4:5}
+
+== ast.SimpleFlatObject
+Object.Field1: 1
+Object.Field2: 2
+Object.Field3: [3 4]
+
+== ast.MultilevelFlatObjects
+ObjectA.ObjectB.ObjectC.Value: 1
+ObjectA.ObjectD.Value:         2
+
+== ast.FlatObjectsInObject
+Object: {
+  A.B: 1
+  A.C: 2
+}
+
+== ast.FlatListInFlatObject
+A.List+:   1
+A.List+:   2
+B.C.List+: 3
+
+== ast.RedefinedFlatObjectValueNear
+A.B: 1
+A.B: 2
+
+== ast.RedefinedFlatObjectValueFar
+A.B: 1
+A.C: 2
+A.B: 3
+
+== ast.RedefinedFlatListWithList
+A.List+: 1
+A.Value: 2
+A.List+: 3
+
+== ast.RedefinedFlatListWithValue
+A.B+: 1
+A.B:  2
+
+== ast.RedefinedFlatObjectNormal
+A.List+: 1
+A:       {}
+
+== ast.RedefinedFlatObjectList
+A.List+: 1
+A+:      {}
+
+== ast.RedefinedFlatObjectFlat
+A.B: 1
+C.D: 2
+A.E: 3
+
+== ast.RedefinedObjectAsFlat
+A:   {}
+A.B: 1
+
+== ast.FlatBlocksInFlatObject
+Object.A.B: {
+  C.D.E:  1
+  C.D.F+: 2
+  C.D.F+: {
+    G.H: 3
+  }
+}
+
+== ast.NonpersistingFlatPrefix
+Album.Title: 'Let It Be'
+Artist:      'The Beatles'
+
+== ast.FlatComments
+# Top Pre
+# Note that flat struct and list nodes cannot have comments, only their children.
+# You need to expand them to attach comments on the flat compound nodes.
+
+# Pre 1
+Object.Value: 1  # Post 1
+
+# Pre 2
+Object.List+: [  # Post 2a
+	# Pre 2b
+	2 # Post 2c
+	# Close 2d
+] # Close 2
+
+# Pre 3
+Object.List+: [3]  # Close 3
+
+# Top Close.
+
+== ast.FullExample
+# This describes a song album.
+
+Album.Title:       'Let It Be'
+Album.Artist:      'The Beatles'
+Album.ReleaseDate: {Year:1970 Month:'May' Day:8}
+Album.Tracks+: {
+	Title:    'Two of Us'
+	Duration: "3m36s"
+}
+Album.Tracks+: {
+	Title:    'Dig a Pony'
+	Duration: "3m54s"
+}
+# Final comment.
+
+== tojson.SimpleFlatList
+SingleElementList+: 1
+List+:              2
+List+:              3
+List+:              4
+
+== tojson.ComplexFlatList
+List+: [1 2 3]
+List+: {Field1:"Value1"}
+List+: {Field2+:"Value2"}
+
+== tojson.SimpleFlatObject
+SingleFieldObject.Field1: 1
+Object.Field2:            123
+Object.Field3:            "234"
+Object.Field4:            true
+
+== tojson.ComplexFlatObject
+Object.Field1: 123
+Object.Field2: "234"
+Object.Field3: {Subfield1:567 Subfield2:"890"}
+Object.Field4: [{Subobject.Subfield3:3}]
+Object.Field5: true
+
+== tojson.EchoComplexObject
+Value2: stdemo.Echo('{A.B.C+: [1 2]}')
+
+== tojson.EchoForm
+Value: stdemo.Echo(stdemo.Echo('''|'"ResultFromInnerForm"''''))
+
+== tojson.EchoInObject
+Object: {
+  A.List+: stdemo.Echo('"Value1"')
+  A.List+: stdemo.Echo('false')
+  B:       stdemo.Echo('123')
+}
+
+== tojson.EchoIgnoredTokens
+Value: stdemo.Echo(  # This is the form's name.
+  # This is its argument.
+  '"Hello"'
+
+  # This is close token.
+)
+
+== serialize.FlatList1
+List+: 1
+List+: 2
+List+: 3
+
+== serialize.FlatList2
+List1+: 1
+List1+: 2
+List2+: 3
+List2+: 4
+
+== serialize.FlatStruct1
+Struct.Name1: 1
+Struct.Name2: 2
+
+== serialize.FlatStruct2
+Struct: {
+  InnerStruct.Name1: 1
+  InnerStruct.Name2: 2
+}
+
+== serialize.FlatStruct3
+Struct: {
+  InnerStruct.OtherStruct.Name:  1
+  DirectField:                   2
+  FlatStruct.AnotherStruct.Name: 3
+}
+
+== serialize.FlatStruct4
+Struct: {
+  InnerStruct.OtherStruct.Name:    1
+  DirectField:                     2
+  FlatStruct.AnotherStruct.List+:  3
+  FlatStruct.AnotherStruct.List+:  5
+  FlatStruct.AnotherStruct.List+:  6
+  FlatStruct.AnotherStruct.Value:  7
+}
+
+== serialize.Demo
+Title: 'High Availability redundant setup'
+
+Clusters.Primary.Name:        'us-east-1-prod'
+Clusters.Primary.Endpoints+:  '10.0.1.5:8080'
+Clusters.Primary.Endpoints+:  '10.0.1.6:8080'
+Clusters.Primary.HealthCheck: {Path:'/health' Interval:30s Timeout:5s Retries:3}
+
+== tojson.Demo
+Title: 'High Availability redundant setup'
+
+Clusters.Primary.Name:        'us-east-1-prod'
+Clusters.Primary.Endpoints+:  '10.0.1.5:8080'
+Clusters.Primary.Endpoints+:  '10.0.1.6:8080'
+Clusters.Primary.HealthCheck: {Path:'/health' Interval:30s Timeout:5s Retries:3}
+
+== tojson.FirstVar
+# stdemo.Var() looks up a field in the top-level vars struct.
+
+#% stdemo.SkipJSONEmit()
+Vars: {
+  Name: 'alice'
+}
+User: stdemo.Var(Name)
+
+== tojson.SimpleBalancer
+#% stdemo.SkipJSONEmit()
+Vars: {
+  HealthCheck: {Path:'/health' Interval:30s Timeout:5s Retries:3}
+  RetryPolicy: {MaxAttempts:5 Backoff:'exponential'}
+}
+Title: 'High Availability redundant setup'
+
+Clusters.Primary.Name:        'us-east-1-prod'
+Clusters.Primary.Endpoints+:  '10.0.1.5:8080'
+Clusters.Primary.Endpoints+:  '10.0.1.6:8080'
+Clusters.Primary.HealthCheck: stdemo.Var(HealthCheck)
+Clusters.Primary.RetryPolicy: stdemo.Var(RetryPolicy)
+
+Clusters.Secondary.Name:        'us-west-2-prod'
+Clusters.Secondary.Endpoints+:  '10.0.2.5:8080'
+Clusters.Secondary.Endpoints+:  '10.0.2.6:8080'
+Clusters.Secondary.HealthCheck: stdemo.Var(HealthCheck)
+Clusters.Secondary.RetryPolicy: stdemo.Var(RetryPolicy)
+
+== tojson.SimplerBalancer
+# You can easily add all sorts of forms in proper high-level code.
+# Let's add another one: stdemo.Merge().
+# It adds new fields to a struct or errors out if they already existed.
+# Call it after you expanded the stdemo.Var() forms in its children.
+# You can now create all sorts of DSL that your configuration needs.
+
+#% stdemo.SkipJSONEmit()
+Vars: {
+  HealthCheck: {Path:'/health' Interval:30s Timeout:5s Retries:3}
+  RetryPolicy: {MaxAttempts:5 Backoff:'exponential'}
+  ClusterTemplate: {
+    HealthCheck: stdemo.Var(HealthCheck)
+    RetryPolicy: stdemo.Var(RetryPolicy)
+  }
+}
+Title: 'High Availability redundant setup'
+
+Clusters.Primary: stdemo.Merge(stdemo.Var(ClusterTemplate) {
+  Title:     'us-east-1-prod'
+  Endpoints: ['10.0.1.5:8080' '10.0.1.6:8080']
+})
+Clusters.Secondary: stdemo.Merge(stdemo.Var(ClusterTemplate) {
+  Title:     'us-west-2-prod'
+  Endpoints: ['10.0.2.5:8080' '10.0.2.6:8080']
+})
+
+== schema.EmptyFile
+# Welcome to the schema task!
+# The input is a schema file and you have to determine if it's valid or not.
+
+# An empty schema file is valid.
+# Just print OK for valid schema files.
+
+== schema.UnknownFormError
+# This task relies heavily on forms.
+# Make sure to error out if you see a form you don't recognize.
+# To report an error print an ERROR line and then you can print an arbitrary message.
+# Your message doesn't have to match the runner's.
+# See if you can generate more user-friendly errors.
+
+Date: foo()
+
+== schema.NotAFormError
+# All definitions in the schema file will be forms.
+# Error out for non-forms.
+
+UnixEpoch: 1970
+
+== schema.ConstIntro
+# const is a special form: it doesn't define a type but rather a value.
+# It has exactly two parameters: a typename and a value of that type.
+# The int is a builtin type representing a 64-bit signed integer.
+
+Tuesday: const(int 2)
+
+== schema.ManyConst
+# You can define multiple things in a schema file.
+
+Monday:    const(int 1)
+Tuesday:   const(int 2)
+Wednesday: const(int 3)
+
+== schema.ConstBadType
+# Error out for unknown types.
+
+Tuesday: const(Foo 2)
+
+== schema.ConstMissingArgs
+# Error out if const has too few arguments.
+
+Tuesday: const(int)
+
+== schema.ConstTooManyArgs
+# Error out if const has too many arguments.
+
+Tuesday: const(int 2 2)
+
+== schema.ConstBadIntArg
+Two: const(int 'two')
+
+== schema.ConstStringArg
+Two: const(string 'two')
+
+== schema.ConstBadStringArg1
+Two: const(string 2)
+
+== schema.ConstBadStringArg2
+Two: const(string two)
+
+== schema.ConstIdentifierArg
+Two: const(identifier two)
+
+== schema.ConstBadIdentifierArg1
+Two: const(identifier 2)
+
+== schema.ConstBadIdentifierArg2
+Two: const(identifier 'two')
+
+== schema.ConstBadIdentifierArg3
+Hello: const(identifier hello-world)
+
+== schema.IntIntro
+# A type can be used as a form to define new types.
+# int() defines a type that accepts integer tokens.
+
+Weekday: int()
+Tuesday: const(Weekday 2)
+
+== schema.StringIsNotInt
+Weekday: int()
+Tuesday: const(Weekday '2')
+
+== schema.IdentifierIsNotInt
+Weekday: int()
+Tuesday: const(Weekday true)
+
+== schema.StringIntro
+Weekday: string()
+Tuesday: const(Weekday 'Tuesday')
+
+== schema.NumberIsNotString
+Weekday: string()
+Tuesday: const(Weekday 2)
+
+== schema.IdentifierIsNotString
+Weekday: string()
+Tuesday: const(Weekday Tuesday)
+
+== schema.IdentifierIntro
+Weekday: identifier()
+Tuesday: const(Weekday Tuesday)
+
+== schema.StringIsNotIdentifier
+Weekday: identifier()
+Tuesday: const(Weekday 'Tuesday')
+
+== schema.NumberIsNotIdentifier
+Weekday: identifier()
+Tuesday: const(Weekday 2)
+
+== schema.NumericIntro
+# numeric accepts tokens that start with a number or +/-.
+
+Date1: const(numeric 2038-01-19)
+Date2: const(numeric -2038-01-19)
+Date3: const(numeric +2038-01-19)
+
+== schema.IdentifierIsNotNumeric
+# numeric accepts tokens that start with a number or +/-.
+
+Date: const(numeric Apocalypse)
+
+== schema.FirstBool
+# bool accepts only the true and false identifiers.
+
+Truth: bool()
+Value: const(Truth true)
+
+== schema.ConstBool
+# bool accepts only the true and false identifiers.
+
+False: const(bool false)
+True:  const(bool true)
+
+== schema.AnyIdentifierIsNotBool
+# bool accepts only the true and false identifiers.
+
+Truth: bool()
+Value: const(Truth FileNotFound)
+
+== schema.FirstAny
+# any means anything matches.
+
+Weekday:   any()
+Monday:    const(Weekday 1)
+Tuesday:   const(Weekday Tuesday)
+Wednesday: const(Weekday 'Wednesday')
+Thursday:  const(Weekday {Day:4})
+Friday:    const(Weekday [5 Friday 'Friday'])
+
+== schema.EnforceUppercase1
+# All definitions must start with an uppercase letter.
+
+unixEpochYear: const(int 1970)
+
+== schema.EnforceUppercase2
+# All definitions must start with an uppercase letter.
+
+Uppercase: bool()
+lowercase: bool()
+
+== schema.NoUnderscore
+# Names cannot contain underscores either.
+
+Unix_Epoch_Year: const(int 1970)
+
+== schema.NoRedefinitionAllowed1
+T: bool()
+T: bool()
+
+== schema.NoRedefinitionAllowed2
+T: bool()
+T: const(bool true)
+
+== schema.FirstList
+# list_typename defines a list of typename values.
+# Basically the list_ prefix is a modifier.
+
+Numbers: const(list_int [1 2 3 4 5])
+
+== schema.ListType
+Weeknames: list_identifier()
+Daynames:  const(Weeknames [Monday Tuesday Wednesday])
+
+== schema.BadListValue
+Weeknames: list_identifier()
+Daynames:  const(Weeknames Monday)
+
+== schema.BadListElem
+Weeknames: list_identifier()
+Daynames:  const(Weeknames [Monday 2 Wednesday])
+
+== schema.BadListType
+Weeknames: list_Dayname()
+
+== schema.CustomList
+Weekname:  identifier()
+Daynames1: const(list_Weekname [Monday Tuesday Wednesday])
+
+Weeknames: list_Weekname()
+Daynames2: const(Weeknames [Monday Tuesday Wednesday])
+
+== schema.FirstStruct
+# struct() is another special top-level only form.
+# It allows defining types for structs.
+# It gets exactly one sdin struct param: the (fieldname, typename) mapping struct.
+
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   string()
+})
+
+Apocalypse: const(Date {
+  Year:  2038
+  Month: January
+  Day:   '19th'
+})
+
+== schema.EnforceUppercaseForStruct
+# All definitions must start with an uppercase letter.
+
+date: struct({
+  Year:  int()
+  Month: int()
+  Day:   int()
+})
+
+== schema.EnforceUppercaseForField
+# The identifier rules apply to field names too.
+
+Date: struct({
+  year:  int()
+  Month: int()
+  Day:   int()
+})
+
+== schema.EnforceNoUnderscoreForField
+# The identifier rules apply to field names too.
+
+Date: struct({
+  Year:             int()
+  Month:            int()
+  Day_Of_The_Month: int()
+})
+
+== schema.FieldsMustBeForms
+Date: struct({
+  Year:  int()
+  Month: int
+  Day:   int()
+})
+
+== schema.NoStructInStruct
+Date: struct({
+  Year:  int()
+  Month: struct({})
+  Day:   int()
+})
+
+== schema.NoConstInStruct
+Date: struct({
+  Year:  int()
+  Month: const(int 2)
+  Day:   int()
+})
+
+== schema.StructFieldsAreOptional
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   string()
+})
+
+Apocalypse: const(Date {
+  Year: 2038
+})
+
+== schema.BadStructFieldType
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   string()
+})
+
+Apocalypse: const(Date {
+  Year:  2038
+  Month: 'January'
+  Day:   '19th'
+})
+
+== schema.ExtraStructField
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   string()
+})
+
+Apocalypse: const(Date {
+  Year:    2038
+  Month:   January
+  Day:     '19th'
+  Weekday: Tuesday
+})
+
+== schema.StructList
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   int()
+})
+
+NewYears: const(list_Date [
+  {Year:2000 Month:January Day:01}
+  {Year:2001 Month:January Day:01}
+  {Year:2002 Month:January Day:01}
+])
+
+== schema.ListInStruct
+Date: struct({
+  Year:     int()
+  Month:    identifier()
+  Day:      string()
+  Holidays: list_string()
+})
+
+Apr23: const(Date {
+  Year:  2038
+  Month: April
+  Day:   "23rd"
+  Holidays: [
+    'English Language Day'
+    'Spanish Language Day'
+  ]
+})
+
+== schema.BadStructInList
+Date: struct({
+  Year:     int()
+  Month:    identifier()
+  Day:      string()
+  Holidays: list_string()
+})
+
+Apr23: const(Date {
+  Year:  2038
+  Month: April
+  Day:   "23rd"
+  Holidays: [
+    'English Language Day'
+    7
+    'Spanish Language Day'
+  ]
+})
+
+== schema.StructInStruct
+MonthType: identifier()
+Date: struct({
+  Year:  int()
+  Month: MonthType()
+  Day:   string()
+})
+Range: struct({
+  Start: Date()
+  End:   Date()
+})
+
+February: const(Range {
+  Start: {Year:2038 Month:Feb Day:"1st"}
+  End:   {Year:2038 Month:Feb Day:"28th"}
+})
+
+== schema.BadStructInStruct
+Date: struct({
+  Year:  int()
+  Month: identifier()
+  Day:   string()
+})
+Person: struct({
+  Name:     string()
+  Birthday: Date()
+})
+Alice: const(Person {
+  Name: "Alice"
+  Birthday: {
+    Year:  1970
+    Month: January
+    Day:   1
+  }
+})
+
+== schema.OrderDoesNotMatter
+February: const(Range {
+  Start: {Year:2038 Month:Feb Day:"1st"}
+  End:   {Year:2038 Month:Feb Day:"28th"}
+})
+
+Range: struct({
+  Start: Date()
+  End:   Date()
+})
+
+Date: struct({
+  Year:  int()
+  Month: MonthType()
+  Day:   string()
+})
+
+MonthType: identifier()
+
+== schema.FirstMap
+Numbers1: const(map_identifier_int {
+  One:   1
+  Two:   2
+  Three: 3
+})
+Numbers2: const(map_identifier_int map(
+  One   1
+  Two   2
+  Three 3
+))
+Numbers3: const(map_string_int map(
+  'One'   1
+  'Two'   2
+  'Three' 3
+))
+
+== schema.BadMapType
+Numbers: map_int()
+
+== schema.BadMapValue1
+Numbers: const(map_identifier_int {
+  One:   1
+  Two:   [2]
+  Three: 3
+})
+
+== schema.BadMapValue2
+Numbers: const(map_identifier_int map(
+  One   1
+  Two   [2]
+  Three 3
+))
+
+== schema.BadMapKeyValue
+Numbers: const(map_identifier_int map(
+  One   1
+  2     2
+  Three 3
+))
+
+== schema.DuplicateMapKey1
+Numbers: const(map_identifier_int map(
+  One 1
+  One 2
+))
+
+== schema.DuplicateMapKey2
+# Normalize strings before the duplicate check.
+
+Numbers: const(map_string_int map(
+  'One' 1
+  "One" 2
+))
+
+== schema.BadMapChildren
+Numbers: const(map_identifier_int map(One))
+
+== schema.NonexistentTypeTopLevel
+X: Nonexistent()
+
+== schema.NonexistentTypeInStruct
+X: struct({
+  Y: Z()
+})
+
+== schema.BadMapKeyTypeStruct
+# Map keys must resolve to a non-structured builtin type.
+# It cannot resolve to a list, a map, or a struct.
+
+Date:     struct({Month:identifier() Day:int()})
+Names:    list_string()
+NameDays: map_Date_Names()
+
+== schema.BadMapKeyTypeList
+# Map keys must resolve to a non-structured builtin type.
+# It cannot resolve to a list, a map, or a struct.
+
+Date:     list_int()
+Names:    list_string()
+NameDays: map_Date_Names()
+
+== schema.BadMapKeyTypeMap
+# Map keys must resolve to a non-structured builtin type.
+# It cannot resolve to a list, a map, or a struct.
+
+Date:     map_int_int()
+Names:    list_string()
+NameDays: map_Date_Names()
+
+== schema.BadMapKeyTypeBogusNonexistentType
+M: map_Z_int()
+Y: X()
+Z: Y()
+
+== schema.BadMapKeyTypeBogusBuiltin
+M: map_Z_int()
+X: x()
+Y: X()
+Z: Y()
+
+== schema.BadNonexistentMapKeyType
+Numbers: map_NumberName_int()
+
+== schema.BadNonexistentMapValueType
+Numbers: map_int_NumberName()
+
+== schema.MapOfLists1
+Date:  identifier()
+Names: list_string()
+NameDays: const(map_Date_Names {
+  Jan01: ["Maria"]
+  Jan02: ["Gregor" "Otfried" "Dietmar"]
+})
+
+== schema.MapOfLists2
+Date: identifier()
+NameDays: const(map_Date_list_string {
+  Jan01: ["Maria"]
+  Jan02: ["Gregor" "Otfried" "Dietmar"]
+})
+
+== schema.MissingStructArg
+MissingStructArg: struct()
+
+== schema.BadStructArg
+BadStructArg: struct(7)
+
+== schema.RecursiveTypeDirect
+X: X()
+
+== schema.RecursiveTypeIndirect
+X: Y()
+Y: Z()
+Z: X()
+
+== schema.RecursiveTypeListDirect
+X: list_X()
+
+== schema.RecursiveTypeListIndirect
+X: Y()
+Y: list_X()
+
+== schema.RecursiveTypeMapDirect
+X: map_int_X()
+
+== schema.RecursiveTypeMapIndirect
+X: Y()
+Y: map_int_X()
+
+== schema.RecursiveTypeMapKey
+Y: Y()
+Z: Y()
+M: map_Z_int()
+
+== schema.StructRecursionDirect
+# This is fine.
+Node: struct({
+  Value: int()
+  Next:  Node()
+})
+
+== schema.StructRecursionIndirect
+# This is fine.
+NodeType: Node()
+Node: struct({
+  Value: int()
+  Next:  NodeType()
+})
+
+== schema.InvalidConstType
+# const() can refer to builtin types but also to all the types defined in this file.
+# But error out for nonexistent types.
+
+UnixEpoch: const(Date {
+  Year:  1970
+  Month: 01
+  Day:   01
+})
+
+== schema.AnyType
+AnyNumber:     const(any 1)
+AnyIdentifier: const(any hello)
+AnyString:     const(any "world")
+AnyList1:      const(any [1 hello "world"])
+AnyList2:      const(list_any [1 hello "world"])
+AnyMap1:       const(any {f1:2 hello:"world"})
+AnyMap2:       const(map_any_any {f1:2 hello:"world"})
+
+== schema.FirstMetaOK
+# The meta field will host some global attributes related to this file.
+# It starts with a lowercase letter so it cannot clash with the names the schema defines.
+
+meta: {}
+
+== schema.BadMetaField
+# Reject the schema file if you see a meta property you don't recognize.
+
+meta: {
+  Foo: 123
+}
+
+== schema.OnlyOneMetaField
+meta: {}
+meta: {}
+
+== schema.PropertyPackageIntro
+# PropertyPackages is a list of lowercase identifiers.
+# It defines the package names that can appear in type() arguments.
+# checks.MatchToken() is a form in checks; accept it for now.
+
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+
+== schema.PropertyPackageInStruct
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+== schema.MissingChecksPackage1
+meta.PropertyPackages: []
+
+Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+
+== schema.MissingChecksPackage2
+Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+
+== schema.MissingProtoPackage
+meta.PropertyPackages: [checks]
+
+Date: struct({
+  Year:  int(proto.ID(1))
+  Month: identifier(proto.ID(2) checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int(proto.ID(3))
+})
+
+== schema.WithProtoPackage
+meta.PropertyPackages: [checks proto]
+
+Date: struct({
+  Year:  int(proto.ID(1))
+  Month: identifier(proto.ID(2) checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int(proto.ID(3))
+})
+
+== schema.NonFormProperty1
+# The properties must be forms too.
+
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken)
+
+== schema.NonFormProperty2
+# The properties must be forms too.
+
+meta.PropertyPackages: [checks]
+
+Date: struct({
+  Year:  int(checks.Required)
+  Month: identifier()
+  Day:   int()
+})
+
+== schema.MatchTokenNoMatch1
+# checks.MatchToken takes a regex argument and the whole token must match that.
+
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+OK:  const(Date {Month:January})
+Bad: const(Date {Month:january})
+
+== schema.MatchTokenOK1
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+OK: const(Date {Month:January})
+
+== schema.MatchTokenOK2
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+Date: struct({
+  Year:  int()
+  Month: Month()
+  Day:   int()
+})
+
+OK1: const(Month January)
+OK2: const(Date {Month:January})
+
+== schema.MatchTokenNoMatch2
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+Date: struct({
+  Year:  int()
+  Month: Month()
+  Day:   int()
+})
+
+Bad: const(Date {Month:january})
+
+== schema.MatchTokenPartialMatch
+# The field value must fully match the regex.
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: identifier(checks.MatchToken('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+OK:  const(Date {Month:January})
+Bad: const(Date {Month:aJanuary})
+
+== schema.MatchTokenQuotedString
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: string(checks.MatchToken('"[A-Z][a-z]+"'))
+  Day:   int()
+})
+
+OK:  const(Date {Month:"January"})
+Bad: const(Date {Month:'January'})
+
+== schema.MatchTokenStringOK
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: string(checks.MatchToken('"[A-Z][a-z]+"'))
+  Day:   int()
+})
+
+OK: const(Date {Month:"January"})
+
+== schema.BadMapEntryKey1
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('"[A-Z][a-z]+"'))
+MonthMap: const(map_Month_int {
+  January:  1
+  february: 2
+  March:    3
+})
+
+== schema.BadMapEntryKey2
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('"[A-Z][a-z]+"'))
+MonthMap: const(map_Month_int map(
+  January  1
+  february 2
+  March    3
+))
+
+== schema.MatchStringOK
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: string(checks.MatchString('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+S1: const(Date {Month:'January'})
+S2: const(Date {Month:"January"})
+S3: const(Date {Month:'''|January'''})
+
+== schema.MatchStringBad
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: string(checks.MatchString('[A-Z][a-z]+'))
+  Day:   int()
+})
+
+S: const(Date {Month:'aJanuary'})
+
+== schema.MatchTokenInListBad
+meta.PropertyPackages: [checks]
+Month:                 identifier(checks.MatchToken('Jan|Feb|Mar'))
+
+OK:  const(list_Month [Jan Feb Mar])
+Bad: const(list_Month [Jan Feb Mar jan])
+
+== schema.MatchTokenInListOK
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('Jan|Feb|Mar'))
+Value: const(list_Month [Jan Feb Mar])
+
+== schema.MatchTokenInMapBad
+meta.PropertyPackages: [checks]
+
+Month: identifier(checks.MatchToken('Jan|Feb|Mar'))
+
+OK:  const(map_Month_int {Jan:1 Feb:2 Mar:3})
+Bad: const(map_Month_int {Jan:1 Feb:2 Mar:3 jan:1})
+
+== schema.MatchTokenInMapOK
+meta.PropertyPackages: [checks]
+Month:                 identifier(checks.MatchToken('Jan|Feb|Mar'))
+Value:                 const(map_Month_int {Jan:1 Feb:2 Mar:3})
+
+== schema.IntRangeBad
+meta.PropertyPackages: [checks]
+Month:                 int(checks.IntRange(1 12))
+January:               const(Month 1)
+Undecimber:            const(Month 13)
+
+== schema.IntRangeOK
+meta.PropertyPackages: [checks]
+Month:                 int(checks.IntRange(1 12))
+February:              const(Month 2)
+
+== schema.MonthRequiredBad
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.Required())
+  Day:   int()
+})
+
+OK:  const(Date {Year:2006 Month:01 Day:12})
+Bad: const(Date {Year:2006 Day:12})
+
+== schema.MonthRequiredOK
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.Required())
+  Day:   int()
+})
+
+OK: const(Date {Year:2006 Month:01 Day:12})
+
+== schema.RequiredMatchTokenBad1
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.MatchToken('[0-1][0-9]') checks.Required())
+  Day:   int()
+})
+
+OK:  const(Date {Year:2006 Month:01 Day:12})
+Bad: const(Date {Year:2006 Month:21 Day:12})
+
+== schema.RequiredMatchTokenBad2
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.Required() checks.MatchToken('[0-1][0-9]'))
+  Day:   int()
+})
+
+OK:  const(Date {Year:2006 Month:01 Day:12})
+Bad: const(Date {Year:2006 Month:21 Day:12})
+
+== schema.RequiredMatchTokenOK1
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.MatchToken('[0-1][0-9]') checks.Required())
+  Day:   int()
+})
+
+OK: const(Date {Year:2006 Month:01 Day:12})
+
+== schema.RequiredMatchTokenOK2
+meta.PropertyPackages: [checks]
+Date: struct({
+  Year:  int()
+  Month: int(checks.Required() checks.MatchToken('[0-1][0-9]'))
+  Day:   int()
+})
+
+OK: const(Date {Year:2006 Month:01 Day:12})
+
+== schema.ProtoConflict
+# Each field must have a different proto.ID number.
+
+meta.PropertyPackages: [proto]
+Date: struct({
+  Year:  int(proto.ID(1))
+  Month: int(proto.ID(2))
+  Day:   int(proto.ID(2))
+})
+
+== schema.NextIDOK
+meta.PropertyPackages: [proto]
+#% proto.NextID(4)
+Date: struct({
+  Year:  int(proto.ID(1))
+  Month: int(proto.ID(2))
+  Day:   int(proto.ID(3))
+})
+
+== schema.NextIDBad
+# Check that the #% proto.NextID form comment is consistent too.
+meta.PropertyPackages: [proto]
+#% proto.NextID(3)
+Date: struct({
+  Year:  int(proto.ID(1))
+  Month: int(proto.ID(2))
+  Day:   int(proto.ID(3))
+})
+
+== fmt.SimpleFields
+# Welcome to the formatting task!
+
+Field1: Value1
+Field2: Value2
+Field3: Value3
+
+== fmt.NoMidComments
+Field:
+# Comment.
+Value
+
+== fmt.NoMidNewlines
+Field1: Value1 Field2:
+Value2: Field3 Value3
+
+
+Field4:    Value4 Field5:
+    Value5 Field6:
+
+  Value6   
+
+	Field7:	Value7
+
+
+== fmt.SimpleMixedFields
+# Each child in an object goes on a separate line.
+# Keep the existing newlines if there were some already.
+
+Field1:   Value1 	Field2: Value2
+   Field3: Value3
+
+
+ Field4: Value4
+
+== fmt.SingleCommentedLine
+# Keep the newlines intact from the input.
+
+== fmt.ManyNewlines
+
+
+# Keep the newlines intact from the input.
+
+
+
+== fmt.SingleEmptyLine
+
+
+== fmt.TwoEmptyLines
+
+
+
+== fmt.SingleLineNoEOL1
+KeepSingleLineSDIN: AsSingleLine
+== fmt.WithNewline1
+Field:Value
+
+== fmt.SingleLineNoEOL2
+Field1:Value Field2:Value
+== fmt.WithNewline2
+Field1:Value Field2:Value
+
+== fmt.NoEOLWithNodeComment
+# Node comment.
+Field1:Value Field2:Value
+== fmt.NoEOLWithRootComment
+# Root comment.
+
+Field1:Value Field2:Value
+== fmt.NoEOLWithEmptyRootComment
+
+Field1:Value Field2:Value
+== fmt.NoEOLWithFlatStruct1
+
+B.C:2 B.D:3
+== fmt.NoEOLWithFlatStruct2
+
+AAA:1 B.C:2 B.D:3
+== fmt.EmptyInput
+
+== fmt.EOFComment1
+# Keep the comments at the end too.
+
+Field: Value
+
+# Like this one.
+
+== fmt.EOFComment2
+Field: Value
+
+# Add newline to the last comment if it didn't have one.
+== fmt.SimpleCommentedField
+# Add two spaces before the side comments.
+
+Field1:   Value1 	Field2: Value2 # sidecomment
+   Field3: Value3
+
+# Full line comment.
+
+ Field4:Value4
+
+== fmt.SimpleObjects
+Object: {
+Field1: 1
+
+Subobject: {
+Field2: 2
+}
+}
+
+== fmt.SimpleLists
+Object: {
+Field1: 1
+
+Sublist: [
+Value
+]
+}
+
+List: [
+Value
+{
+Field2: Value2
+}
+]
+
+== fmt.MultivalueLines
+# Keep newlines in lists as they were in the input.
+
+List: [
+  1 2 3
+  4
+  5 6
+
+  7 8 9 10
+]
+
+== fmt.SinglelineObjectBlock1
+# An object can be fully defined on a single line.
+# If that happened, then keep it on a single line.
+
+Date1:  { Year:  1999    Month: 12   Day:	30}
+Date2:  { Date:{Year:   1999    Month: 12   Day:	30} Time:{Hour: 13 Minute:34}}
+
+== fmt.SinglelineListBlock
+Date1:  [ Year   1999    Month  12   Day	30]
+Date2: [ [Year   1999    Month 12   Day	30] [Hour 13 Minute  34]]
+
+== fmt.MultilineBlock
+# Recap: non-singleline objects: one field-value pair on each line.
+# Lists: keep them as they were in the input.
+
+ExampleDate1: {Year:   1999
+
+Month:12   
+
+		Day:	30} ExampleDate2:  [Year   1999    Month 12
+Day	30]
+
+== fmt.SinglelineObjectBlock2
+Date:  {
+Day:{Year:   1999    Month: 12   Day:	30}
+
+Time:{Hour: 13 Minute: 34}
+
+Empty1: {  }
+Empty2: {
+}
+Empty3: {  }}
+
+== fmt.ObjectNewlines
+AList: [
+  { k1: v1
+  k2: v2 }{k1: v1
+  k2: [v2]}
+]
+
+== fmt.MultiBlockIndentation
+# The indentation level is determined by the number of open blocks.
+
+List1: [
+x
+[
+1
+]
+y
+]
+
+== fmt.SaveIndentSimple
+# Save the extra indent for the inner block if:
+# - the last child starts on the same line as the current node,
+# - there's no newline or comment after the child's closing token.
+Key1: [[
+]]
+Key2: [[
+  Value
+]]
+Key3: [{
+  InnerKey: InnerValue
+}]
+
+== fmt.SaveIndentDeep
+# Save the extra indent for the inner block if:
+# - the last child starts on the same line as the current node,
+# - there's no newline or comment after the child's closing token.
+Key: [Value1 Value2 [
+  Value3 Value4 [[[
+    Value5
+]]]]]
+
+== fmt.Indent1
+Key: [
+  [
+    Value1
+  ]
+  [
+    Value2
+  ]
+]
+
+== fmt.Indent2
+Key: [[
+    Value1
+  ][
+    Value2
+]]
+
+== fmt.Indent3
+Key: [{
+    Key1: Value1
+  }{
+    Key2: Value2
+}]
+
+== fmt.Indent4
+Key: [[
+    Value2
+  ]
+]
+
+== fmt.Indent5
+Key: [[
+  SomeListValue ] {
+  InnerKey: InnerValue
+  }]
+
+== fmt.MoarIndents
+List1: [1 2
+3 4]
+List2: [[1 2
+3 4]]
+List3: [[1 2] [3 4
+5 6]]
+List4: [1 2
+[3 4 5 6]]
+List5: [[1 2]
+[3 4 5 6]]
+List6: [[
+1 2]
+[3 4 5 6]]
+
+== fmt.CloseTokens
+# } must be on its own line in multiline objects.
+# No such rule for ].
+A: [
+  v1]
+B: {
+  k2:v2}
+C: [{
+  k3: v3}]
+D: { k4: [v4
+]}
+
+== fmt.CrazyList
+CrazyList:  [[Year   1999    Month 12   Day	30]
+[Hour 13 Minute 34]
+[{list:[]}] [] {} [
+x] [[][][]{}] [{obj: {}}] [
+] [obj {v1: 1 v2: 2}{
+v3: v3}]]
+
+== fmt.CrazyLine
+CrazyList:  [[Year   1999    Month 12   Day	30] [Hour 13 Minute 34] [{list:[]}] [] {} [ x] [[][][]{}] [{obj: {}}] [ ] [obj {v1:1 v2:2}{ v3:v3}]] # comment 1
+SimpleValue: 1 # comment 2
+
+== fmt.TopLevelComments1
+# Make sure to keep the top-level comments.
+
+# And the closing comments too.
+
+== fmt.TopLevelComments2
+# Make sure to keep the top-level comments.
+
+Obj: {}
+
+# And the closing comments too.
+
+== fmt.BlockSidecomment
+Object: { # Keep the comments for the open braces.
+}
+
+List: [ # Keep the comments for the open brackets too.
+]
+
+== fmt.ClosingComment
+Object: {
+# Keep the comments for the close braces.
+}
+
+List: [
+# Keep the comments for the close brackets too.
+]
+
+== fmt.ClosingSidecomment
+Object: {
+} # Keep the comments for the close braces.
+
+List: [
+] # Keep the comments for the close brackets too.
+
+== fmt.SaveIndentComment
+Key2: [Value1 Value2 {
+    InnerKey: InnerValue
+    # comment
+}]
+
+== fmt.FlatValueFormat
+Object: {
+AObject.Subvalue1: 1
+AObject.Subvalue2: 2
+
+BObject.Subobject.Subvalue: 3
+}
+
+== fmt.FlatStructNextToNonFlat
+X: {A:1
+B.C:2 B.D:3}
+
+Y: {
+A:1 B.C:2 B.D:3}
+
+Z: {A:1 B.C:2 B.D:3}
+
+== fmt.FlatListFormat
+Object: {
+FlatList+:   1
+FlatList+:  2
+
+Subobject.List+: 3
+Subobject.List+: 	4
+}
+
+== fmt.FlatListNextToNonFlat
+X: {A:1
+L+:2 L+:3}
+
+Y: {
+A:1 L+:2 L+:3}
+
+Z: {A:1 L+:2 L+:3}
+
+== fmt.FlatInList
+AObject.List+: [{
+BObject.Value:1
+}]
+AObject.List+:[{
+BObject.Value: 2
+}]
+
+== fmt.FlatObjects
+A.B.C:{
+D.E: {F:1}
+
+G.H+: [{
+	I.J: 2
+} [3]]
+}
+
+== fmt.FlatComments
+# Top pretoken.
+
+# pretoken1
+Object.Value: 1 # posttoken1
+
+# pretoken2
+Object.List+:  [ # posttoken2a
+	# pretoken2a
+	2 # posttoken2a
+	# closetoken2a
+] # closetoken2
+
+# pretoken3
+Object.List+:  [3] # closetoken3
+
+# Top closetoken.
+
+== fmt.SimpleAlignment
+AField1: Value1
+AField22: Value22
+AField333: Value333
+
+BField22: 22
+BField1:      Value1
+BField333: "Value333"
+
+CField333: 'Value333'
+CField22: 2.2
+CField1: "Value1"
+
+DShort: 1
+DAVeryLongFieldName: 2
+
+== fmt.FlatAlignment
+AField22: Value22
+AField1.FlatField: Value1
+
+BField1a: Value1
+BField55555+:  Value55555
+BField1b: Value1
+
+CField7777777+:  Value7777777
+  CField7777777+:    Value7777777
+CField333: Value333
+CField1.FlatObjectList+:     Value1
+  CField22.FlatValue: Value22
+    CField22.Subobject.AnotherFlatObject:   Value22
+CField55555: Value55555
+
+== fmt.CommentAlignment
+AField1: Value1 # comment
+AField22: Value22    # comment
+AField333: Value333    # comment
+
+BField22: 22    # comment
+BField1:      Value1    # comment
+BField333: "Value333"    # comment
+
+CField333: 'Value333'    # comment
+CField22: 2.2 # comment
+CField1: "Value1"	# comment
+
+DShort: 1 # comment
+DAVeryLongFieldName: 2# comment
+
+== fmt.AlignmentBlocks
+AField1: Value1 # comment
+AField22: Value22    # comment
+AField333: Value333    # comment
+# Full-line comments end the alignment block.
+BField22: 22    # comment
+BField1:      Value1
+BField333: "Value333"    # comment
+List: [ # lists like this
+] # end the alignment block
+CField4444: 'Value4444'    # comment
+CField22: 2.2 # comment
+CField1: "Value1"	# comment
+Object: { # objects like this
+} # end the alignment block
+DShort: 1 # comment
+DAVeryLongFieldName: 2# comment
+
+== fmt.SingleLineBlocks
+# Single line lists and objects don't end the alignment block.
+
+AField1: Value1 # comment
+EmptyList: [] # block
+AField22: Value22    # comment
+EmptyBlock: {} # block
+AField333: Value333    # comment
+List: [1 2 3] # block
+BField22: 22    # comment
+Object: { A:1 B:2 C:3} # block
+BField1:      Value1    # comment
+BField333: "Value333"    # comment
+
+== fmt.EmptyBlocks
+A: {
+} B: {
+} C: {} D:{}
+
+== fmt.ListComments
+# Align them too.
+# Much nicer to read them.
+
+List: [
+aaa b  # comment
+b ccc  # comment
+1 2 3 4# comment
+]
+
+== fmt.OneListComment
+# The longest line determines the spaces before the comments in a block.
+
+List: [
+VeryLongFieldName AnotherElem
+Kurz # comment
+AnotherVeryLongFieldName
+]
+
+== fmt.ObjectAlignment
+# Align within an object too.
+
+A: 1
+Object: {
+AField1: Value1 # comment
+AField22: Value22    # comment
+AField333: Value333    # comment
+
+BField22: 22    # comment
+BField1:      Value1    # comment
+BField333: "Value333"    # comment
+# full line comment
+} B: 2
+
+== fmt.RawStringAlignment
+# Multiline strings also end an alignment block.
+
+A: "hello\n"
+BB: "hi"
+CCC: '''|hoi
+'''
+DDDD: "hai"
+
+== fmt.MultilineStringAddIndent
+# Reindent multiline strings.
+# The indentation change before the closing quotes must be applied to all lines.
+
+FavoriteCode: '''go
+package main
+
+func main() {
+	fmt.Println("Hello world!")
+}
+'''
+
+== fmt.MultilineStringRemoveIndent
+# Reindent multiline strings.
+# The indentation change before the closing quotes must be applied to all lines.
+
+FavoriteCode: '''go
+		package main
+
+		func main() {
+			fmt.Println("Hello world!")
+		}
+		'''
+
+== fmt.MultilineStringListAddIndent
+# Reindent multiline strings.
+# The indentation change before the closing quotes must be applied to all lines.
+
+List: [
+FavoriteCode '''go
+package main
+
+func main() {
+	fmt.Println("Hello world!")
+}
+'''
+]
+
+== fmt.MultilineStringSpaceIndent
+FavoriteCode: '''
+  package main
+
+  func main() {
+    fmt.Println("Hello world!")
+  }
+  '''
+
+== fmt.MultilineStringEmptyLines
+# Remove indent for empty lines.
+
+FavoriteCode: '''go
+		package main
+		
+		func main() {
+			fmt.Println("Hello world!")
+		}
+		'''
+
+== fmt.MultilineStringNonEmptyLines
+# Don't touch lines even if they have only whitespace.
+
+FavoriteCode: '''go
+		package main
+			
+		func main() {
+			fmt.Println("Hello world!")
+		}
+		'''
+
+== fmt.SimpleForms
+# All forms except map() format like lists.
+
+Dir1: A(echo.Echo 'Value1')
+Dir2: B(echo.Echo
+'Value2')
+Dir3: C(
+echo.Echo
+'Value3'
+)
+
+== fmt.SaveIndentForm
+Key: somedir({
+  Key: Value
+})
+
+== fmt.SchemaForms
+Date: struct({
+  Year:  int()
+  Month: identifier(checks.MatchToken('''|January|...|December''') checks.Required())
+  Day:   int(
+    checks.IntRange(1 31)
+    checks.Required()
+  )
+})
+
+== fmt.NonPairsList1
+Name: List(
+  v1 v2 v3
+  v4 v5
+  value6 value8
+  v9 v10 v11)
+
+== fmt.NonPairsList2
+Name: List(
+  v1 v2 v3
+  v4 v5
+  value6 [a b c]
+  v9 v10 v11)
+
+== fmt.NonPairsList3
+Name: List(
+  v1 v2 v3
+  v4 v5 # Align comments.
+  value6 [a b c] # Comment 2.
+  v9 v10 v11)
+
+== fmt.NonPairsList4
+Name: List(
+  v1 v2 v3
+  v4 v5 # Align solo comments too.
+  value6 [a b c]
+  v9 v10 v11)
+
+== fmt.BlockPairs
+# If the first token is {, [, or a form, then consider the run as a non-aligned run.
+
+List: [
+  [1 2 3] A  # c1
+  {X:Y} banana # c2
+  Cherry c # c3
+  F() ch # c4
+]
+
+== fmt.Forms
+Name1: Form1(name1:v1 n2:v2 v3 v4 v5)
+Name2: Form2(
+  name1: v1
+  n2:    v2
+  v3 v4 v5)
+Name3: Form2(
+  name1: v1
+  n2:v2 v3 v4 v5)
+
+== fmt.FormNames
+# Any bare token can be the name inside a form.
+Name: Form(
+  2006-01-02: v1
+  foo-bar@baz: {v2:123}
+  a.b.c+: [2]
+  %: F2([{a:b}])
+)
+
+== fmt.MapIntro
+# Format map() like structs.
+# Keep single-line maps on a single line.
+
+M1: map(  K1  V1   K2  V2)
+M2: map(K   V
+)
+M3: map(
+  Short Value
+  LongKey Value
+
+  K V K2 V
+)
+
+== fmt.MapNewlines
+AList: [
+  map( k1 v1
+  k2 v2 )map(k1 v1
+  k2 [v2])
+]
+
+== fmt.MapAlignment
+# Align within maps too.
+
+A: 1
+Map: map(
+AField1 Value1 # comment
+AField22 Value22    # comment
+AField333 Value333    # comment
+
+BField22 22    # comment
+BField1      Value1    # comment
+BField333 "Value333"    # comment
+# full line comment
+) B: 2
+
+== fmt.MapScalarFieldComment
+# Fields and values are formatted to be on the same line.
+# Therefore fields cannot have comments in map either,
+# so move them to the key's Pre comments.
+MultilineMap: map(
+Field # Field comment.
+Value # Value comment.
+
+K
+
+# Pre comment.
+V K2 V
+
+# Pre1
+K3 # Post
+# Pre2
+V # Post
+K4 V
+)
+
+== fmt.MapListFieldComment
+# Fields and values are formatted to be on the same line.
+# Therefore fields cannot have comments in map either,
+# so move them to the key's Pre comments.
+MultilineMap: map(
+Field # Field comment.
+[Value] # Value comment.
+
+K
+
+# Pre comment.
+[
+V
+] K2 [V]
+
+# Pre1
+K3 # Post
+# Pre2
+[ # Pre3
+V] # PostClose
+K4 V
+)
+
+== fmt.RawStringMapAlignment
+# Multiline strings end an alignment block.
+
+Map: map(
+A "hello\n"
+BB "hi"
+CCC '''|hoi
+'''
+DDDD "hai"
+
+XA "hello\n"
+XBB "hi"
+'''|
+XCCC''' "hoi"
+XDDDD "hai")
+
+== fmt.DocExample
+Struct: {
+  Field1: apple # comment 1
+F2: banana # comment 2
+A:[1 2] B:{X:Y} # comment 3
+}
+List: [
+val1 val2 val3  # comment 1
+   v1 v2 v3  # comment 2
+ value1 v2    val3
+
+col1 col2     # comment 1
+  c1 c2       # comment 2
+ column1 column2
+]
+
+# Avoid unnecessary indentation like in List2 here:
+List1: [
+form(
+A:1 2
+)
+]
+List2: [form(
+A:1 2
+)]
+
+== fmt.SortValues
+# Sort the children if you see a #% sdin.KeepSorted() comment.
+
+#% sdin.KeepSorted()
+UserList: [
+charlie
+alice
+dave
+frank
+bob
+]
+ # unsorted because this node has no #sdinfmt comment.
+UnsortedList: [
+bob
+alice
+]
+
+== fmt.SortStrings
+# Sort based on the string content for string tokens.
+
+#% sdin.KeepSorted()
+UserList: [
+  'charlie'
+  "alice"
+  "dave"
+  'frank'
+  '''|bob'''
+]
+
+== fmt.KeepCommentsWhenSorting
+#% sdin.KeepSorted()
+UserList: [
+charlie
+# Comment.
+alice
+dave  # sidecomment.
+frank
+
+bob
+
+# Closing comment.
+]
+
+== fmt.KeepSinglelineSorted
+#% sdin.KeepSorted()
+Users: [charlie alice dave frank bob]
+
+== fmt.CompareRecursively
+#% sdin.KeepSorted()
+Users: [
+{Name:"charlie" Value:4}
+{Name:"alice" Value:2}
+{Name:"dave" Value:3}
+{Name:"charlie" Value:1}
+{Name:"frank" Value:5}
+{Name:"bob" Value:6}
+]
+
+== fmt.CompareFieldsFirst
+#% sdin.KeepSorted()
+Usermap: {
+Charlie:[cherry]
+Alice:"apple"
+Dave: date
+Frank:{fig:1}
+Bob:'''|banana'''
+}
+
+== fmt.KeepUnsorted1
+#% sdin.KeepSortedNot()
+UserList: [
+charlie
+alice
+dave
+frank
+bob
+]
+
+== fmt.KeepUnsorted2
+#% sdin.DirectivePackages()
+
+#% notsdin.KeepSorted()
+UserList: [
+charlie
+alice
+dave
+frank
+bob
+]
+
+== fmt.KeepToplevelFlatlistSorted
+# Remember, flat compound nodes cannot have comments attached.
+# So KeepSorted can have a path argument in order to support sorting flat nodes.
+#
+#% sdin.KeepSorted(path: UserList)
+
+# Make sure to keep the per-entry comments.
+UserList+: charlie
+UserList+: alice
+UserList+: dave
+UserList+: frank
+UserList+: bob
+
+== fmt.KeepInnerFlatlistSorted1
+# Remember, flat compound nodes cannot have comments attached.
+# So KeepSorted can have a path argument in order to support sorting flat nodes.
+
+#% sdin.KeepSorted(path: Readers)
+ACL: {
+  Owners+:  olivia
+  Writers+: walter
+
+  # Make sure to keep the per entry comments, however bad the result is.
+  Readers+: charlie
+  Readers+: alice
+  Readers+: dave
+  Readers+: frank
+  Readers+: bob
+}
+
+== fmt.KeepInnerFlatlistSorted2
+# Remember, flat compound nodes cannot have comments attached.
+# So KeepSorted can have a path argument in order to support sorting flat nodes.
+#
+#% sdin.KeepSorted(path: ACL.Readers)
+
+ACL.Owners+:  olivia
+ACL.Writers+: walter
+
+# Make sure to keep the per entry comments, however bad the result is.
+ACL.Readers+: charlie
+ACL.Readers+: alice
+ACL.Readers+: dave
+ACL.Readers+: frank
+ACL.Readers+: bob
+
+== fmt.KeepSortedBadPath
+#% sdin.KeepSorted(path: Foo)
+
+== fmt.KeepSortedBadArg
+#% sdin.KeepSorted(foo: bar)
+
+== fmt.KeepSortedNoEOFNewline
+#% sdin.KeepSorted(path: Users)
+
+Users+: charlie  # C
+Users+: bob      # B
+Users+: alice    # A
+== fmt.SdinFormatSimple
+# Format `sdin` tagged strings as sdin.
+Raw: '''sdin
+# This is an inner sdin string.
+Short: Value1
+LongField: Value2
+'''
+
+== fmt.SdinFormatRaw
+# Print `sdin` blocks back as multiline strings.
+Raw: '''sdin|# This is an inner sdin string.
+Short: Value1
+LongField: Value2'''
+
+== fmt.SdinFormatMultiline
+Multiline: '''sdin
+Short: Value1 # sidecomment1
+LongField: Value2 # sidecomment2
+List: [3   4 5 6 7] # sidecomment3
+Obj: {
+F1: V1 F333: V33}
+'''
+
+== fmt.SdinInSdin
+F1: V1
+F333: V333
+F: ''''sdin
+F1: V1
+F333: V3
+F4444: '''sdin
+IF: V1
+F333: V3
+'''
+''''
+
+== fmt.SdinErrorInSdin
+F1: OK
+F2: '''sdin|
+Key1: Value
+Key2: # This one is missing a value.
+'''
+
+== fmt.SdinList
+Field: '''sdin
+ListElem1 # add support for
+AnotherElem2 # list of sdin values too
+Elem3
+
+# Just parse/format this whole block as a flat form.
+Name: value
+AnotherName: anotherValue
+'''
+
+== fmt.AlbumExample
+# This is a complete example of various ways to express a structure.
+
+Way1: {
+Album.Title: "Let It Be"
+Album.Artist: "The Beatles"
+Album.ReleaseDate.Year: 1970
+Album.ReleaseDate.Month: "May"
+Album.ReleaseDate.Day: 8
+Album.Tracks+:  { Title:    "Two of Us" Duration:"3m36s" }
+Album.Tracks+:  { Title:    "Dig a Pony" Duration:"3m54s" }
+}
+
+Way2: {
+Album: {
+Title: "Let It Be"
+Artist: "The Beatles"
+ReleaseDate: {Year:1970 Month:"May" Day:8}
+Tracks+: { Title:"Two of Us" Duration:"3m36s" }
+Tracks+: { Title:"Dig a Pony" Duration:"3m54s" }
+}
+}
+
+Way3: {
+Album: {
+Title: "Let It Be"
+Artist: "The Beatles"
+ReleaseDate: {Year:1970 Month:"May" Day:8}
+Tracks: [
+{ Title: "Two of Us" Duration:"3m36s" }
+{ Title: "Dig a Pony" Duration:"3m54s" }
+]
+}
+}
+
+== done.Done
+Congrats, you completed the challenge!
+Share your result or feedback at https://github.com/ypsu/sdinthrough/discussions.
